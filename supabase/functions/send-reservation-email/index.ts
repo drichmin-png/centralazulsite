@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import nodemailer from "npm:nodemailer@6.9.12";
 
 const SENDER_DOMAIN = "notify.centralazul.site";
 const FROM_DOMAIN = "centralazul.site";
@@ -40,6 +41,20 @@ const getAirportName = (code: string): string => {
 const normalizeEmail = (email?: string | null): string => String(email || "").trim().toLowerCase();
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const htmlToPlainText = (html: string): string => html
+  .replace(/<style[\s\S]*?<\/style>/gi, "")
+  .replace(/<script[\s\S]*?<\/script>/gi, "")
+  .replace(/<br\s*\/?>/gi, "\n")
+  .replace(/<\/(p|div|tr|h[1-6]|li)>/gi, "\n")
+  .replace(/<[^>]+>/g, "")
+  .replace(/&nbsp;/g, " ")
+  .replace(/&amp;/g, "&")
+  .replace(/&lt;/g, "<")
+  .replace(/&gt;/g, ">")
+  .replace(/[ \t]+\n/g, "\n")
+  .replace(/\n{3,}/g, "\n\n")
+  .trim();
 
 const airportDisplay = (code: string): string => {
   const name = getAirportName(code);
@@ -589,6 +604,55 @@ serve(async (req) => {
     const companhia = body.companhia || "Azul";
     const messageId = crypto.randomUUID();
     const idempotencyKey = body.idempotencyKey || `${type}-${messageId}`;
+    const plainText = htmlToPlainText(emailContent.html);
+    const gmailUser = Deno.env.get("GMAIL_USER");
+    const gmailPass = Deno.env.get("GMAIL_APP_PASSWORD");
+
+    if (gmailUser && gmailPass && body.deliveryMode !== "queue") {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: { user: gmailUser, pass: gmailPass },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"Azul Linhas Aéreas" <${gmailUser}>`,
+          to: recipientEmail,
+          subject: emailContent.subject,
+          html: emailContent.html,
+          text: plainText,
+          replyTo: gmailUser,
+        });
+
+        await supabase.from("email_send_log").insert({
+          message_id: messageId,
+          template_name: `reservation-${type}`,
+          recipient_email: recipientEmail,
+          status: "sent",
+          metadata: { provider: "gmail-smtp", smtp_message_id: info.messageId },
+        });
+
+        console.log("Email sent via Gmail SMTP:", messageId, info.messageId);
+
+        return new Response(
+          JSON.stringify({ success: true, emailSent: true, messageId, provider: "gmail-smtp" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } catch (smtpError) {
+        const smtpMessage = smtpError instanceof Error ? smtpError.message : String(smtpError);
+        console.error("Gmail SMTP failed, falling back to queue:", smtpMessage);
+        await supabase.from("email_send_log").insert({
+          message_id: messageId,
+          template_name: `reservation-${type}`,
+          recipient_email: recipientEmail,
+          status: "smtp_failed_fallback_queue",
+          error_message: smtpMessage.slice(0, 1000),
+          metadata: { provider: "gmail-smtp" },
+        });
+      }
+    }
 
     // Get or create unsubscribe token (one per recipient email)
     let unsubscribeToken: string | null = null;
@@ -612,21 +676,6 @@ serve(async (req) => {
     }
 
     console.log(`Enqueuing email [${type}] to ${recipientEmail} via ${SENDER_DOMAIN}`);
-
-    // Gera versão texto a partir do HTML (melhora reputação anti-spam)
-    const plainText = emailContent.html
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/(p|div|tr|h[1-6]|li)>/gi, "\n")
-      .replace(/<[^>]+>/g, "")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/[ \t]+\n/g, "\n")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
 
     const payload = {
       to: recipientEmail,
