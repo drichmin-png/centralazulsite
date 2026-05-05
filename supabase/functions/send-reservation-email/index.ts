@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import nodemailer from "npm:nodemailer@6.9.12";
 
 const SENDER_DOMAIN = "notify.centralazul.site";
 const FROM_DOMAIN = "centralazul.site";
@@ -40,6 +41,20 @@ const getAirportName = (code: string): string => {
 const normalizeEmail = (email?: string | null): string => String(email || "").trim().toLowerCase();
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const htmlToPlainText = (html: string): string => html
+  .replace(/<style[\s\S]*?<\/style>/gi, "")
+  .replace(/<script[\s\S]*?<\/script>/gi, "")
+  .replace(/<br\s*\/?>/gi, "\n")
+  .replace(/<\/(p|div|tr|h[1-6]|li)>/gi, "\n")
+  .replace(/<[^>]+>/g, "")
+  .replace(/&nbsp;/g, " ")
+  .replace(/&amp;/g, "&")
+  .replace(/&lt;/g, "<")
+  .replace(/&gt;/g, ">")
+  .replace(/[ \t]+\n/g, "\n")
+  .replace(/\n{3,}/g, "\n\n")
+  .trim();
 
 const airportDisplay = (code: string): string => {
   const name = getAirportName(code);
