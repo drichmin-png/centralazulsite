@@ -9,6 +9,7 @@ import PainelPagamentos from "./pages/PainelPagamentos";
 import ColetaDados from "./pages/ColetaDados";
 import BoardingPass from "./pages/BoardingPass";
 import LoginOperador from "./pages/LoginOperador";
+import VerificarDNS from "./pages/VerificarDNS";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/c/:codigo" element={<ColetaDados />} />
           <Route path="/cadastro" element={<ColetaDados />} />
           <Route path="/pagamento" element={<BoardingPass />} />
+          <Route path="/verificar-dns" element={<VerificarDNS />} />
           {/* Legacy redirects */}
           <Route path="/coleta-dados" element={<ColetaDados />} />
           <Route path="/boarding-pass" element={<BoardingPass />} />
