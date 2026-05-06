@@ -17,8 +17,8 @@ function isRateLimited(error: unknown): boolean {
   return error instanceof Error && error.message.includes('429')
 }
 
-// Check if an error is a forbidden (403) response, which means emails are
-// disabled for this project. Retrying won't help — move straight to DLQ.
+// Check if an error is a forbidden (403) response. Retrying won't help.
+// Move straight to DLQ.
 function isForbidden(error: unknown): boolean {
   if (error && typeof error === 'object' && 'status' in error) {
     return (error as { status: number }).status === 403
@@ -50,29 +50,6 @@ function parseJwtClaims(token: string): Record<string, unknown> | null {
   } catch {
     return null
   }
-}
-
-async function getOrCreateUnsubscribeToken(
-  supabase: ReturnType<typeof createClient>,
-  email: string
-): Promise<string> {
-  const normalizedEmail = String(email || '').trim().toLowerCase()
-  const { data: existing } = await supabase
-    .from('email_unsubscribe_tokens')
-    .select('token')
-    .eq('email', normalizedEmail)
-    .maybeSingle()
-
-  if (existing?.token) return existing.token
-
-  const token = crypto.randomUUID()
-  const { data: inserted } = await supabase
-    .from('email_unsubscribe_tokens')
-    .insert({ email: normalizedEmail, token })
-    .select('token')
-    .maybeSingle()
-
-  return inserted?.token || token
 }
 
 // Move a message to the dead letter queue and log the reason.
@@ -272,10 +249,6 @@ Deno.serve(async (req) => {
       }
 
       try {
-        if (queue === 'transactional_emails' && !payload.unsubscribe_token && payload.to) {
-          payload.unsubscribe_token = await getOrCreateUnsubscribeToken(supabase, String(payload.to))
-        }
-
         await sendLovableEmail(
           {
             run_id: payload.run_id,
@@ -351,12 +324,12 @@ Deno.serve(async (req) => {
           )
         }
 
-        // 403 means emails are disabled for this project — retrying won't help.
-        // Move straight to DLQ and stop processing the rest of the batch.
+        // 403s are permanent configuration or authorization failures for this
+        // message, so move straight to DLQ and stop processing the rest of the batch.
         if (isForbidden(error)) {
-          await moveToDlq(supabase, queue, msg, 'Emails disabled for this project')
+          await moveToDlq(supabase, queue, msg, errorMsg.slice(0, 1000))
           return new Response(
-            JSON.stringify({ processed: totalProcessed, stopped: 'emails_disabled' }),
+            JSON.stringify({ processed: totalProcessed, stopped: 'forbidden' }),
             { headers: { 'Content-Type': 'application/json' } }
           )
         }
