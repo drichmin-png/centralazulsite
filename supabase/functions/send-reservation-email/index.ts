@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import nodemailer from "npm:nodemailer@6.9.12";
 
 const SENDER_DOMAIN = "notify.voeazull.pro";
 const FROM_DOMAIN = "voeazull.pro";
@@ -605,54 +604,6 @@ serve(async (req) => {
     const messageId = crypto.randomUUID();
     const idempotencyKey = body.idempotencyKey || `${type}-${messageId}`;
     const plainText = htmlToPlainText(emailContent.html);
-    const gmailUser = Deno.env.get("GMAIL_USER");
-    const gmailPass = Deno.env.get("GMAIL_APP_PASSWORD");
-
-    if (gmailUser && gmailPass && body.deliveryMode !== "queue") {
-      try {
-        const transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
-          port: 465,
-          secure: true,
-          auth: { user: gmailUser, pass: gmailPass },
-        });
-
-        const info = await transporter.sendMail({
-          from: `"Azul Linhas Aéreas" <${gmailUser}>`,
-          to: recipientEmail,
-          subject: emailContent.subject,
-          html: emailContent.html,
-          text: plainText,
-          replyTo: gmailUser,
-        });
-
-        await supabase.from("email_send_log").insert({
-          message_id: messageId,
-          template_name: `reservation-${type}`,
-          recipient_email: recipientEmail,
-          status: "sent",
-          metadata: { provider: "gmail-smtp", smtp_message_id: info.messageId },
-        });
-
-        console.log("Email sent via Gmail SMTP:", messageId, info.messageId);
-
-        return new Response(
-          JSON.stringify({ success: true, emailSent: true, messageId, provider: "gmail-smtp" }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      } catch (smtpError) {
-        const smtpMessage = smtpError instanceof Error ? smtpError.message : String(smtpError);
-        console.error("Gmail SMTP failed, falling back to queue:", smtpMessage);
-        await supabase.from("email_send_log").insert({
-          message_id: messageId,
-          template_name: `reservation-${type}`,
-          recipient_email: recipientEmail,
-          status: "smtp_failed_fallback_queue",
-          error_message: smtpMessage.slice(0, 1000),
-          metadata: { provider: "gmail-smtp" },
-        });
-      }
-    }
 
     // Get or create unsubscribe token (one per recipient email)
     let unsubscribeToken: string | null = null;
