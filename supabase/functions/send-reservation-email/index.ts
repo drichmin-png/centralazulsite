@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import nodemailer from "npm:nodemailer@6.9.12";
 
-const SENDER_DOMAIN = "notify.centralazul.site";
-const FROM_DOMAIN = "centralazul.site";
+const SENDER_DOMAIN = "notify.voeazull.pro";
+const FROM_DOMAIN = "voeazull.pro";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
