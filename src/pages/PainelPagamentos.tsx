@@ -190,7 +190,7 @@ const PainelPagamentos = () => {
               <div className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Mail className="h-3.5 w-3.5 text-primary" />
-                  <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Teste de Email · notify.centralazul.site</div>
+                  <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Teste de Email · notify.voeazull.pro</div>
                 </div>
                 <div className="flex gap-2">
                   <Input

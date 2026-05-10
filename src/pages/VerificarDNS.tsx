@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, Loader2, RefreshCw } from "lucide-react";
 
-const DOMAIN = "notify.centralazul.site";
+const DOMAIN = "notify.voeazull.pro";
 
 type DnsAnswer = { name: string; type: number; data: string; TTL?: number };
 type DnsResult = { Status: number; Answer?: DnsAnswer[] };
