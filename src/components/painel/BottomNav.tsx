@@ -24,11 +24,11 @@ const BottomNav = ({ activeTab, onChange, isAdmin, pedidosCount = 0 }: BottomNav
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden pointer-events-none">
       <div
-        className="flex justify-center px-5 pb-5 pointer-events-auto"
+        className="flex justify-center px-3 pb-5 pointer-events-auto"
         style={{ paddingBottom: `calc(20px + env(safe-area-inset-bottom, 0px))` }}
       >
         <div
-          className="flex items-center justify-around w-full max-w-[360px] rounded-2xl px-2 py-1.5"
+          className="flex items-center w-full max-w-[420px] rounded-2xl px-1.5 py-1.5 overflow-x-auto scrollbar-hide"
           style={{
             background: "rgba(15, 15, 15, 0.82)",
             backdropFilter: "blur(24px) saturate(180%)",
@@ -43,7 +43,7 @@ const BottomNav = ({ activeTab, onChange, isAdmin, pedidosCount = 0 }: BottomNav
               <button
                 key={tab.id}
                 onClick={() => onChange(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 py-1.5 px-3 min-w-[56px]"
+                className="relative flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 py-1.5 px-2 min-w-[48px] shrink-0"
               >
                 {isActive && (
                   <motion.div
