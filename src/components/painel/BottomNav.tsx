@@ -43,7 +43,7 @@ const BottomNav = ({ activeTab, onChange, isAdmin, pedidosCount = 0 }: BottomNav
               <button
                 key={tab.id}
                 onClick={() => onChange(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 py-1.5 px-3 min-w-[56px]"
+                className="relative flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 py-1.5 px-2 min-w-[48px] shrink-0"
               >
                 {isActive && (
                   <motion.div
