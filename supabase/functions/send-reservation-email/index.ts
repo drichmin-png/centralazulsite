@@ -367,7 +367,10 @@ const buildConfirmationEmail = (body: any) => {
       ${flightBlocks}
     </div>
 
+    ${trustBlock()}
     ${promoBanners()}
+    ${travelInfoBlock()}
+    ${finalTrustCard()}
   `, companhia || "Azul");
 
   return { subject, html };
