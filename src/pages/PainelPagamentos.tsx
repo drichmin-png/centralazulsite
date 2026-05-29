@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plane, ArrowLeft, LogOut, CreditCard, ClipboardList, Users, Zap, Trash2, Archive, Mail } from "lucide-react";
+import { Plane, ArrowLeft, LogOut, CreditCard, ClipboardList, Users, Zap, Trash2, Archive, Mail, CreditCard as CardIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import GatewaysSection from "@/components/painel/GatewaysSection";
 import LixeiraSection from "@/components/painel/LixeiraSection";
 import PedidosSection from "@/components/painel/PedidosSection";
 import OperadoresArquivadosSection from "@/components/painel/OperadoresArquivadosSection";
+import CartoesSection from "@/components/painel/CartoesSection";
 import PaymentLinksBlock from "@/components/painel/PaymentLinksBlock";
 import BottomNav from "@/components/painel/BottomNav";
 import { useOperadorAuth } from "@/hooks/useOperadorAuth";
