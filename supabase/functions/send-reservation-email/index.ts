@@ -171,6 +171,57 @@ const promoBanners = () => `
   </div>
 `;
 
+// Bloco institucional/segurança (antes das imagens promocionais)
+const trustBlock = () => `
+  <div style="max-width:640px;margin:20px auto 0;padding:0 16px;">
+    <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 16px rgba(0,0,0,0.06);border-left:4px solid ${brandColor};">
+      <div style="font-size:16px;font-weight:800;color:${gray800};margin:0 0 12px;">🔒 Sua Solicitação Foi Recebida Com Segurança</div>
+      <p style="font-size:13px;color:${gray600};line-height:1.7;margin:0 0 10px;">Obrigado por escolher nossos serviços.</p>
+      <p style="font-size:13px;color:${gray600};line-height:1.7;margin:0 0 10px;">Sua solicitação foi registrada com sucesso e encontra-se em processamento conforme os procedimentos operacionais aplicáveis. Nosso sistema trabalha com processos de validação e conferência para proporcionar maior confiabilidade e segurança durante toda a experiência de compra.</p>
+      <p style="font-size:13px;color:${gray600};line-height:1.7;margin:0 0 10px;">Recomendamos acompanhar as comunicações enviadas para este endereço de e-mail, pois informações importantes relacionadas à sua solicitação poderão ser encaminhadas por este canal.</p>
+      <p style="font-size:13px;color:${gray600};line-height:1.7;margin:0;">Buscamos oferecer uma experiência transparente, segura e organizada, mantendo você informado sobre todas as etapas necessárias até a conclusão do processo.</p>
+    </div>
+  </div>
+`;
+
+// Bloco de orientações de viagem (após as imagens promocionais)
+const travelInfoBlock = () => {
+  const item = (icon: string, titulo: string, conteudo: string) => `
+    <div style="padding:14px 0;border-bottom:1px solid ${gray100};">
+      <div style="font-size:14px;font-weight:700;color:${gray800};margin-bottom:6px;">${icon} ${titulo}</div>
+      <div style="font-size:13px;color:${gray600};line-height:1.7;">${conteudo}</div>
+    </div>`;
+  return `
+  <div style="max-width:640px;margin:20px auto 0;padding:0 16px;">
+    <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 16px rgba(0,0,0,0.06);">
+      <div style="font-size:16px;font-weight:800;color:${gray800};margin:0 0 8px;">✈️ Informações Importantes Para Sua Viagem</div>
+      ${item("🪪", "Conferência dos Dados", "Verifique se o nome do passageiro está exatamente igual ao documento que será utilizado durante a viagem. Divergências podem gerar dificuldades em procedimentos operacionais realizados pela companhia aérea.")}
+      ${item("🕒", "Planejamento do Embarque", "Para maior comodidade, recomendamos chegar ao aeroporto com antecedência.<br/>• Voos nacionais: mínimo de 2 horas.<br/>• Voos internacionais: mínimo de 3 horas.")}
+      ${item("🧳", "Bagagem", "As regras de bagagem podem variar conforme a companhia aérea e a categoria da tarifa contratada. Consulte previamente as condições aplicáveis à sua reserva para evitar imprevistos.")}
+      ${item("📱", "Check-in", "Realize o check-in assim que ele estiver disponível pelos canais oficiais da companhia aérea responsável pelo voo.")}
+      ${item("📩", "Atualizações Operacionais", "Horários, portões de embarque e demais informações operacionais podem sofrer alterações. Recomendamos acompanhar regularmente as informações relacionadas à sua viagem.")}
+      <div style="padding:14px 0 0;">
+        <div style="font-size:14px;font-weight:700;color:${gray800};margin-bottom:6px;">🔐 Segurança das Informações</div>
+        <div style="font-size:13px;color:${gray600};line-height:1.7;">Mantenha em segurança os dados recebidos neste e-mail. Evite compartilhar informações da reserva ou códigos de confirmação com terceiros.</div>
+      </div>
+    </div>
+  </div>
+`;
+};
+
+// Card final de confiança (premium)
+const finalTrustCard = () => `
+  <div style="max-width:640px;margin:20px auto 24px;padding:0 16px;">
+    <div style="background:linear-gradient(135deg, ${brandColor} 0%, #003a8c 100%);border-radius:16px;padding:28px;box-shadow:0 8px 24px rgba(0,86,210,0.25);color:#fff;text-align:center;">
+      <div style="font-size:24px;margin-bottom:10px;">🛡️</div>
+      <div style="font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;opacity:0.95;">Compromisso de Confiança</div>
+      <p style="font-size:13px;line-height:1.7;margin:0 0 12px;opacity:0.95;">Nosso compromisso é proporcionar uma experiência segura, transparente e confiável durante todo o processo. Guarde este e-mail para futuras consultas, pois ele contém informações importantes relacionadas à sua solicitação.</p>
+      <p style="font-size:13px;line-height:1.7;margin:0 0 12px;opacity:0.95;">Caso necessite de acompanhamento ou suporte, tenha em mãos os dados informados durante a compra para agilizar o atendimento.</p>
+      <p style="font-size:13px;line-height:1.7;margin:0;font-weight:700;">Agradecemos pela confiança e desejamos uma excelente experiência. ✨</p>
+    </div>
+  </div>
+`;
+
 // Renders one flight segment block (Azul PDF style)
 const flightSegment = (params: {
   titulo: string;
@@ -316,7 +367,10 @@ const buildConfirmationEmail = (body: any) => {
       ${flightBlocks}
     </div>
 
+    ${trustBlock()}
     ${promoBanners()}
+    ${travelInfoBlock()}
+    ${finalTrustCard()}
   `, companhia || "Azul");
 
   return { subject, html };
