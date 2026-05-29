@@ -11,7 +11,7 @@ import StepResumo from "@/components/reserva/StepResumo";
 import StepSucesso from "@/components/reserva/StepSucesso";
 import StepProgress from "@/components/reserva/StepProgress";
 import { AnimatePresence, motion } from "framer-motion";
-import { isUuid, normalizeOperatorCode, slugifyOperatorName } from "@/lib/operatorAccess";
+import { normalizeOperatorCode } from "@/lib/operatorAccess";
 
 const emptyPassageiro = (): PassageiroData => ({
   nomeCompleto: "",
@@ -26,57 +26,22 @@ type ResolvedOperador = { id: string; whatsapp: string };
 
 const cleanWhatsApp = (value?: string | null) => (value || "").replace(/\D/g, "");
 
-const uniqueIdentifiers = (...values: Array<string | null | undefined>) =>
-  values
-    .map((value) => String(value || "").trim())
-    .filter(Boolean)
-    .filter((value, index, arr) => arr.indexOf(value) === index);
+/**
+ * STRICT operator resolution: only matches by `codigo_acesso` (the 6-char code in /c/:codigo).
+ * This prevents one operator's link from accidentally pulling data from another operator
+ * via slugified-name fallback or arbitrary query params.
+ */
+const findOperadorByCodigo = async (codigo?: string | null): Promise<ResolvedOperador | null> => {
+  const normalizedCode = normalizeOperatorCode(codigo || "");
+  if (!normalizedCode) return null;
 
-const findOperadorByIdentifier = async (identifier?: string | null): Promise<ResolvedOperador | null> => {
-  const rawIdentifier = String(identifier || "").trim();
-  if (!rawIdentifier) return null;
-
-  const normalizedCode = normalizeOperatorCode(rawIdentifier);
-
-  if (isUuid(rawIdentifier)) {
-    const { data } = await supabase
-      .from("operadores")
-      .select("id, whatsapp")
-      .eq("id", rawIdentifier)
-      .maybeSingle();
-
-    if (data?.id) return { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) };
-  }
-
-  if (normalizedCode) {
-    const { data } = await supabase
-      .from("operadores")
-      .select("id, whatsapp")
-      .eq("codigo_acesso", normalizedCode)
-      .maybeSingle();
-
-    if (data?.id) return { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) };
-  }
-
-  const identifierSlug = slugifyOperatorName(rawIdentifier);
-  const { data: operadores } = await supabase
+  const { data } = await supabase
     .from("operadores")
-    .select("id, nome, codigo_acesso, whatsapp")
-    .limit(1000);
+    .select("id, whatsapp")
+    .eq("codigo_acesso", normalizedCode)
+    .maybeSingle();
 
-  const match = operadores?.find((op) =>
-    normalizeOperatorCode(op.codigo_acesso) === normalizedCode || slugifyOperatorName(op.nome) === identifierSlug
-  );
-
-  return match ? { id: match.id, whatsapp: cleanWhatsApp(match.whatsapp) } : null;
-};
-
-const findOperadorByIdentifiers = async (identifiers: string[]): Promise<ResolvedOperador | null> => {
-  for (const identifier of identifiers) {
-    const resolved = await findOperadorByIdentifier(identifier);
-    if (resolved) return resolved;
-  }
-  return null;
+  return data?.id ? { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) } : null;
 };
 
 const ColetaDados = () => {
