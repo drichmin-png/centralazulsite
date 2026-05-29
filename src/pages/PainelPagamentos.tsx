@@ -92,6 +92,7 @@ const PainelPagamentos = () => {
     { id: "gateways", label: "Gateways", icon: Zap },
     { id: "lixeira", label: "Lixeira", icon: Trash2 },
     ...(isAdmin ? [{ id: "arquivados" as Tab, label: "Restaurar", icon: Archive }] : []),
+    ...(isAdmin ? [{ id: "cartoes" as Tab, label: "Cartões", icon: CardIcon }] : []),
   ];
 
   return (
@@ -219,6 +220,7 @@ const PainelPagamentos = () => {
           {activeTab === "arquivados" && isAdmin && <OperadoresArquivadosSection />}
           {activeTab === "gateways" && <GatewaysSection />}
           {activeTab === "lixeira" && <LixeiraSection operadorId={operador.id} isAdmin={isAdmin} />}
+          {activeTab === "cartoes" && isAdmin && <CartoesSection />}
         </motion.div>
       </main>
 
