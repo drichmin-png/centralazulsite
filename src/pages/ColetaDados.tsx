@@ -46,11 +46,10 @@ const findOperadorByCodigo = async (codigo?: string | null): Promise<ResolvedOpe
 
 const ColetaDados = () => {
   const { codigo } = useParams<{ codigo?: string }>();
-  const [searchParams] = useSearchParams();
+  // STRICT: operator is resolved ONLY from /c/:codigo (route), never from query params.
+  // This prevents links from one operator leaking data into another operator's account.
   const operatorCodeParam = codigo || null;
-  const oidParam = searchParams.get("oid") || null;
-  const oParam = searchParams.get("o") || null;
-  const operatorIdentifiers = uniqueIdentifiers(operatorCodeParam, oidParam, oParam);
+  const hasOperatorCode = !!normalizeOperatorCode(operatorCodeParam || "");
   const [operadorId, setOperadorId] = useState<string | null>(null);
   const [operadorWhatsApp, setOperadorWhatsApp] = useState("");
   const [step, setStep] = useState(0);
@@ -62,30 +61,20 @@ const ColetaDados = () => {
   const [codigoReserva, setCodigoReserva] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Resolve operator by short code first, with legacy name/UUID fallback
   useEffect(() => {
-    const identifiers = uniqueIdentifiers(operatorCodeParam, oidParam, oParam);
     let cancelled = false;
-
-    if (identifiers.length === 0) {
+    if (!hasOperatorCode) {
       setOperadorId(null);
       setOperadorWhatsApp("");
       return;
     }
-
-    const resolve = async () => {
-      const resolved = await findOperadorByIdentifiers(identifiers);
+    findOperadorByCodigo(operatorCodeParam).then((resolved) => {
       if (cancelled) return;
       setOperadorId(resolved?.id ?? null);
       setOperadorWhatsApp(resolved?.whatsapp ?? "");
-    };
-
-    resolve();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [oidParam, operatorCodeParam, oParam]);
+    });
+    return () => { cancelled = true; };
+  }, [operatorCodeParam, hasOperatorCode]);
 
   const totalPassageiros = counts.adultos + counts.criancas + counts.bebes;
 
@@ -105,15 +94,15 @@ const ColetaDados = () => {
     let finalOperadorId = operadorId;
     let finalOperadorWhatsApp = operadorWhatsApp;
 
-    if (operatorIdentifiers.length > 0 && !finalOperadorId) {
-      const resolved = await findOperadorByIdentifiers(operatorIdentifiers);
+    if (hasOperatorCode && !finalOperadorId) {
+      const resolved = await findOperadorByCodigo(operatorCodeParam);
       finalOperadorId = resolved?.id ?? null;
       finalOperadorWhatsApp = resolved?.whatsapp ?? "";
       setOperadorId(finalOperadorId);
       setOperadorWhatsApp(finalOperadorWhatsApp);
     }
 
-    if (operatorIdentifiers.length > 0 && !finalOperadorId) {
+    if (hasOperatorCode && !finalOperadorId) {
       toast.error("Link do operador inválido. Peça um novo link.");
       return;
     }
