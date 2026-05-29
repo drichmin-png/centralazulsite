@@ -455,6 +455,34 @@ const buildTripDetailsEmail = (body: any) => {
         </table>
       `)}
 
+      <!-- Blocos visuais de voo (estilo PDF Azul) -->
+      ${flightSegment({
+        titulo: "Ida",
+        origemCodigo: origem || "",
+        origemNome: getAirportName(origem || ""),
+        destinoCodigo: destino || "",
+        destinoNome: getAirportName(destino || ""),
+        data: idaData || "",
+        partida: idaPartida || "",
+        chegada: idaChegada || "",
+        numeroVoo: numeroVoo || "",
+        passageiros: paxList,
+        assentos: assentos || [],
+      })}
+      ${hasVolta ? flightSegment({
+        titulo: "Volta",
+        origemCodigo: destino || "",
+        origemNome: getAirportName(destino || ""),
+        destinoCodigo: origem || "",
+        destinoNome: getAirportName(origem || ""),
+        data: voltaData || "",
+        partida: voltaPartida || "",
+        chegada: voltaChegada || "",
+        numeroVoo: numeroVoo || "",
+        passageiros: paxList,
+        assentos: assentos || [],
+      }) : ""}
+
       <!-- Trecho IDA -->
       ${cardBlock(`
         ${sectionTitle("✈ Trecho de Ida")}
@@ -480,6 +508,7 @@ const buildTripDetailsEmail = (body: any) => {
           ${infoRow("Voo", numeroVoo || "—")}
         </table>
       `) : ""}
+
 
       <!-- Passageiros -->
       ${cardBlock(`
