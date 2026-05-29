@@ -703,7 +703,8 @@ serve(async (req) => {
     if (type === "confirmation") {
       emailContent = buildConfirmationEmail(body);
     } else if (type === "trip_details") {
-      emailContent = buildTripDetailsEmail(body);
+      // Botão "Enviar e-mail" do painel — usa o mesmo layout Azul PDF da confirmação
+      emailContent = buildConfirmationEmail(body);
     } else if (type === "boarding_pass") {
       emailContent = buildBoardingPassEmail(body);
     } else {
