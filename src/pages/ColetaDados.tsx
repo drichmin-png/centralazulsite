@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import StepWelcome from "@/components/reserva/StepWelcome";
@@ -11,7 +11,7 @@ import StepResumo from "@/components/reserva/StepResumo";
 import StepSucesso from "@/components/reserva/StepSucesso";
 import StepProgress from "@/components/reserva/StepProgress";
 import { AnimatePresence, motion } from "framer-motion";
-import { isUuid, normalizeOperatorCode, slugifyOperatorName } from "@/lib/operatorAccess";
+import { normalizeOperatorCode } from "@/lib/operatorAccess";
 
 const emptyPassageiro = (): PassageiroData => ({
   nomeCompleto: "",
@@ -26,66 +26,30 @@ type ResolvedOperador = { id: string; whatsapp: string };
 
 const cleanWhatsApp = (value?: string | null) => (value || "").replace(/\D/g, "");
 
-const uniqueIdentifiers = (...values: Array<string | null | undefined>) =>
-  values
-    .map((value) => String(value || "").trim())
-    .filter(Boolean)
-    .filter((value, index, arr) => arr.indexOf(value) === index);
+/**
+ * STRICT operator resolution: only matches by `codigo_acesso` (the 6-char code in /c/:codigo).
+ * This prevents one operator's link from accidentally pulling data from another operator
+ * via slugified-name fallback or arbitrary query params.
+ */
+const findOperadorByCodigo = async (codigo?: string | null): Promise<ResolvedOperador | null> => {
+  const normalizedCode = normalizeOperatorCode(codigo || "");
+  if (!normalizedCode) return null;
 
-const findOperadorByIdentifier = async (identifier?: string | null): Promise<ResolvedOperador | null> => {
-  const rawIdentifier = String(identifier || "").trim();
-  if (!rawIdentifier) return null;
-
-  const normalizedCode = normalizeOperatorCode(rawIdentifier);
-
-  if (isUuid(rawIdentifier)) {
-    const { data } = await supabase
-      .from("operadores")
-      .select("id, whatsapp")
-      .eq("id", rawIdentifier)
-      .maybeSingle();
-
-    if (data?.id) return { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) };
-  }
-
-  if (normalizedCode) {
-    const { data } = await supabase
-      .from("operadores")
-      .select("id, whatsapp")
-      .eq("codigo_acesso", normalizedCode)
-      .maybeSingle();
-
-    if (data?.id) return { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) };
-  }
-
-  const identifierSlug = slugifyOperatorName(rawIdentifier);
-  const { data: operadores } = await supabase
+  const { data } = await supabase
     .from("operadores")
-    .select("id, nome, codigo_acesso, whatsapp")
-    .limit(1000);
+    .select("id, whatsapp")
+    .eq("codigo_acesso", normalizedCode)
+    .maybeSingle();
 
-  const match = operadores?.find((op) =>
-    normalizeOperatorCode(op.codigo_acesso) === normalizedCode || slugifyOperatorName(op.nome) === identifierSlug
-  );
-
-  return match ? { id: match.id, whatsapp: cleanWhatsApp(match.whatsapp) } : null;
-};
-
-const findOperadorByIdentifiers = async (identifiers: string[]): Promise<ResolvedOperador | null> => {
-  for (const identifier of identifiers) {
-    const resolved = await findOperadorByIdentifier(identifier);
-    if (resolved) return resolved;
-  }
-  return null;
+  return data?.id ? { id: data.id, whatsapp: cleanWhatsApp(data.whatsapp) } : null;
 };
 
 const ColetaDados = () => {
   const { codigo } = useParams<{ codigo?: string }>();
-  const [searchParams] = useSearchParams();
+  // STRICT: operator is resolved ONLY from /c/:codigo (route), never from query params.
+  // This prevents links from one operator leaking data into another operator's account.
   const operatorCodeParam = codigo || null;
-  const oidParam = searchParams.get("oid") || null;
-  const oParam = searchParams.get("o") || null;
-  const operatorIdentifiers = uniqueIdentifiers(operatorCodeParam, oidParam, oParam);
+  const hasOperatorCode = !!normalizeOperatorCode(operatorCodeParam || "");
   const [operadorId, setOperadorId] = useState<string | null>(null);
   const [operadorWhatsApp, setOperadorWhatsApp] = useState("");
   const [step, setStep] = useState(0);
@@ -97,30 +61,20 @@ const ColetaDados = () => {
   const [codigoReserva, setCodigoReserva] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Resolve operator by short code first, with legacy name/UUID fallback
   useEffect(() => {
-    const identifiers = uniqueIdentifiers(operatorCodeParam, oidParam, oParam);
     let cancelled = false;
-
-    if (identifiers.length === 0) {
+    if (!hasOperatorCode) {
       setOperadorId(null);
       setOperadorWhatsApp("");
       return;
     }
-
-    const resolve = async () => {
-      const resolved = await findOperadorByIdentifiers(identifiers);
+    findOperadorByCodigo(operatorCodeParam).then((resolved) => {
       if (cancelled) return;
       setOperadorId(resolved?.id ?? null);
       setOperadorWhatsApp(resolved?.whatsapp ?? "");
-    };
-
-    resolve();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [oidParam, operatorCodeParam, oParam]);
+    });
+    return () => { cancelled = true; };
+  }, [operatorCodeParam, hasOperatorCode]);
 
   const totalPassageiros = counts.adultos + counts.criancas + counts.bebes;
 
@@ -140,15 +94,15 @@ const ColetaDados = () => {
     let finalOperadorId = operadorId;
     let finalOperadorWhatsApp = operadorWhatsApp;
 
-    if (operatorIdentifiers.length > 0 && !finalOperadorId) {
-      const resolved = await findOperadorByIdentifiers(operatorIdentifiers);
+    if (hasOperatorCode && !finalOperadorId) {
+      const resolved = await findOperadorByCodigo(operatorCodeParam);
       finalOperadorId = resolved?.id ?? null;
       finalOperadorWhatsApp = resolved?.whatsapp ?? "";
       setOperadorId(finalOperadorId);
       setOperadorWhatsApp(finalOperadorWhatsApp);
     }
 
-    if (operatorIdentifiers.length > 0 && !finalOperadorId) {
+    if (hasOperatorCode && !finalOperadorId) {
       toast.error("Link do operador inválido. Peça um novo link.");
       return;
     }
