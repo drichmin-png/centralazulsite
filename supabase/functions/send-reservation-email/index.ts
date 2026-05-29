@@ -83,9 +83,10 @@ const calcBoardingTime = (partida: string): string => {
   return `${String(bh).padStart(2, "0")}:${String(bm).padStart(2, "0")}`;
 };
 
-// Brand colors
+// Brand colors (Azul)
 const brandColor = "#0033A0";
 const brandDark = "#001560";
+const brandLight = "#2563eb";
 const accentGold = "#C5A55A";
 const gray100 = "#f3f4f6";
 const gray200 = "#e5e7eb";
@@ -93,6 +94,14 @@ const gray400 = "#9ca3af";
 const gray600 = "#4b5563";
 const gray800 = "#1f2937";
 const successGreen = "#16a34a";
+
+// Hosted banner images (Supabase Storage public bucket)
+const BANNER_BASE = "https://qhxwrjhbeoxamozcykdg.supabase.co/storage/v1/object/public/email-assets";
+const BANNER_CHECKIN = `${BANNER_BASE}/banner-checkin.png`;
+const BANNER_HOTEL = `${BANNER_BASE}/banner-hotel.png`;
+const BANNER_EMBARQUE = `${BANNER_BASE}/banner-embarque.png`;
+const BANNER_DUVIDA = `${BANNER_BASE}/banner-duvida.png`;
+const AZUL_LOGO_URL = "https://www.centralazul.site/azul-logo-email.jpg";
 
 // ═══════════════════════════════════════════════════════
 // SHARED COMPONENTS
@@ -102,25 +111,21 @@ const emailWrapper = (content: string, companhia: string) => `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f0f2f5;">
+<body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f0f2f5;-webkit-text-size-adjust:100%;">
 ${content}
-<div style="text-align:center;padding:24px 16px;">
-  <p style="font-size:11px;color:${gray400};line-height:1.6;margin:0;">
-    Este é um e-mail automático gerado pelo sistema.<br/>
-    Algumas informações operacionais podem sofrer alterações pela companhia aérea.
+<div style="text-align:center;padding:24px 16px;max-width:640px;margin:0 auto;">
+  <p style="font-size:10px;color:${gray400};line-height:1.6;margin:0;">
+    Esse email é enviado por: AZUL LINHAS AÉREAS BRASILEIRAS S.A.<br/>
+    Avenida Marcos Penteado de Ulhôa Rodrigues, 939, 9º Andar, Torre Jatobá, Barueri, São Paulo, 06460-040, BR
   </p>
-  <p style="font-size:10px;color:#ccc;margin:12px 0 0;">${companhia || "Azul"} © ${new Date().getFullYear()} · Todos os direitos reservados</p>
+  <p style="font-size:10px;color:#bbb;margin:10px 0 0;">${companhia || "Azul"} © ${new Date().getFullYear()} · Todos os direitos reservados</p>
 </div>
 </body>
 </html>`;
 
-const AZUL_LOGO_URL = "https://www.centralazul.site/azul-logo-email.jpg";
-
-const emailHeader = (title: string, subtitle: string, icon: string) => `
-<div style="background:linear-gradient(135deg,${brandColor},${brandDark});padding:28px 20px 24px;text-align:center;">
-  <img src="${AZUL_LOGO_URL}" alt="Azul" style="width:160px;height:auto;margin:0 auto 16px;display:block;border-radius:8px;" />
-  <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:0.5px;">${icon} ${title}</div>
-  ${subtitle ? `<div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:6px;">${subtitle}</div>` : ""}
+const emailHeader = () => `
+<div style="background:#ffffff;padding:24px 20px 0;text-align:center;border-bottom:4px solid ${brandColor};">
+  <img src="${AZUL_LOGO_URL}" alt="Azul" style="width:120px;height:auto;margin:0 auto 16px;display:block;" />
 </div>`;
 
 const sectionTitle = (text: string) =>
@@ -139,75 +144,180 @@ const cardBlock = (content: string) =>
 const ctaButton = (text: string, url: string, bgColor: string = brandColor) =>
   `<a href="${url}" style="display:inline-block;background:${bgColor};color:#fff;text-decoration:none;padding:14px 40px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 16px ${bgColor}33;">${text}</a>`;
 
+// Bottom promo banners (Azul-style: check-in, hotel, embarque, dúvida)
+const promoBanners = () => `
+  <div style="max-width:640px;margin:24px auto 0;padding:0 16px;">
+    <div style="margin-bottom:14px;text-align:center;">
+      <img src="${BANNER_CHECKIN}" alt="Informação sobre o Check-in" style="width:100%;max-width:600px;height:auto;display:block;margin:0 auto;border-radius:8px;" />
+    </div>
+    <div style="margin-bottom:14px;text-align:center;">
+      <img src="${BANNER_HOTEL}" alt="15% de desconto em hotéis" style="width:100%;max-width:600px;height:auto;display:block;margin:0 auto;border-radius:8px;" />
+    </div>
+    <div style="margin-bottom:14px;text-align:center;">
+      <img src="${BANNER_EMBARQUE}" alt="Embarque sem papel" style="width:100%;max-width:600px;height:auto;display:block;margin:0 auto;border-radius:8px;" />
+    </div>
+    <div style="margin-bottom:14px;text-align:center;">
+      <img src="${BANNER_DUVIDA}" alt="Tem alguma dúvida?" style="width:100%;max-width:600px;height:auto;display:block;margin:0 auto;border-radius:8px;" />
+    </div>
+  </div>
+  <div style="max-width:640px;margin:0 auto;padding:16px;">
+    <div style="background:#fff;border-radius:12px;padding:20px;font-size:11px;color:${gray600};line-height:1.6;">
+      <div style="font-weight:700;color:${brandColor};margin-bottom:8px;font-size:13px;">Avisos importantes</div>
+      <p style="margin:6px 0;">1 — Apresente-se para o embarque 2 (duas) horas antes da partida do voo, com documento de identificação original com fotografia.</p>
+      <p style="margin:6px 0;">2 — O bilhete não é endossável, sendo válido por um ano após a data de emissão.</p>
+      <p style="margin:6px 0;">3 — Cancelamentos, alterações e reembolsos podem ser realizados dentro do prazo de validade, conforme as regras tarifárias vigentes no momento da compra.</p>
+      <p style="margin:6px 0;">4 — Em caso de dúvidas sobre alterações de voo, pedidos de reembolso, não comparecimento ao voo ou demais questões, contate a central de atendimento da companhia.</p>
+    </div>
+  </div>
+`;
+
+// Renders one flight segment block (Azul PDF style)
+const flightSegment = (params: {
+  titulo: string;
+  origemCodigo: string;
+  origemNome: string;
+  destinoCodigo: string;
+  destinoNome: string;
+  data: string;
+  partida: string;
+  chegada: string;
+  numeroVoo: string;
+  passageiros: any[];
+  assentos: string[];
+}) => {
+  const { titulo, origemCodigo, origemNome, destinoCodigo, destinoNome, data, partida, chegada, numeroVoo, passageiros, assentos } = params;
+  const paxRows = passageiros.map((p: any, i: number) => `
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:13px;color:${gray800};font-weight:600;">${(p.nomeCompleto || p.nome || "—")}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};text-align:center;">0</td>
+      <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};text-align:center;">${assentos?.[i] || "Selecionar assento"}</td>
+    </tr>`).join("");
+  return `
+  <div style="background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+    <div style="font-size:16px;font-weight:800;color:${gray800};margin-bottom:16px;">
+      Voo para <span style="color:${brandColor};">${destinoNome || destinoCodigo}</span>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+      <tr>
+        <td style="vertical-align:top;width:38%;">
+          <div style="font-size:32px;font-weight:900;color:${brandColor};letter-spacing:1px;">${origemCodigo}</div>
+          <div style="font-size:12px;color:${gray600};margin-top:2px;">${origemNome || ""}</div>
+          <div style="font-size:13px;color:${gray800};font-weight:700;margin-top:6px;">${data}${partida ? ` · ${partida}` : ""}</div>
+        </td>
+        <td style="vertical-align:middle;text-align:center;width:24%;">
+          <div style="font-size:12px;color:${gray400};text-transform:uppercase;font-weight:700;letter-spacing:1px;">Voo</div>
+          <div style="font-size:14px;color:${gray800};font-weight:800;margin:4px 0;">${numeroVoo || "—"}</div>
+          <div style="color:${brandColor};font-size:18px;">✈ →</div>
+        </td>
+        <td style="vertical-align:top;text-align:right;width:38%;">
+          <div style="font-size:32px;font-weight:900;color:${brandColor};letter-spacing:1px;">${destinoCodigo}</div>
+          <div style="font-size:12px;color:${gray600};margin-top:2px;">${destinoNome || ""}</div>
+          <div style="font-size:13px;color:${gray800};font-weight:700;margin-top:6px;">${data}${chegada ? ` · ${chegada}` : ""}</div>
+        </td>
+      </tr>
+    </table>
+    <div style="font-size:13px;font-weight:700;color:${gray800};margin:14px 0 8px;">Viajantes</div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${gray100};border-radius:8px;border-collapse:separate;border-spacing:0;">
+      <tr style="background:${gray100};">
+        <th style="padding:10px 12px;text-align:left;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Passageiro</th>
+        <th style="padding:10px 12px;text-align:center;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Bagagem despachada</th>
+        <th style="padding:10px 12px;text-align:center;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Assento</th>
+      </tr>
+      ${paxRows}
+    </table>
+  </div>`;
+};
+
 // ═══════════════════════════════════════════════════════
-// EMAIL 1: CONFIRMAÇÃO DE RESERVA (automático)
+// EMAIL 1: CONFIRMAÇÃO DE RESERVA (auto, estilo PDF Azul)
 // ═══════════════════════════════════════════════════════
 
 const buildConfirmationEmail = (body: any) => {
-  const { codigoReserva, passageiros, assentos, metodoPagamento, companhia } = body;
+  const { codigoReserva, passageiros, assentos, companhia, origem, destino, numeroVoo,
+    idaData, idaPartida, idaChegada, voltaData, voltaPartida, voltaChegada } = body;
   const paxList = passageiros || [];
   const paxName = paxList[0]?.nomeCompleto || paxList[0]?.nome || "Cliente";
+  const hasFlightInfo = !!(origem && destino);
+  const hasVolta = !!voltaData;
 
-  const paxRows = paxList.map((p: any, i: number) => `
-    <tr>
-      <td style="padding:12px 16px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray400};font-weight:700;text-align:center;">${i + 1}</td>
-      <td style="padding:12px 16px;border-bottom:1px solid ${gray100};font-size:13px;font-weight:700;color:${gray800};">${p.nomeCompleto || p.nome || "—"}</td>
-      <td style="padding:12px 16px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};">${formatCpf(p.cpf || p.cpfDocumento || "")}</td>
-      <td style="padding:12px 16px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};">${assentos?.[i] || "—"}</td>
-    </tr>
-  `).join("");
+  const subject = `Reserva ${codigoReserva || ""} realizada com sucesso`;
 
-  const subject = `Confirmação da reserva ${codigoReserva} - ${companhia || "Azul"}`;
+  const flightBlocks = hasFlightInfo ? `
+    ${flightSegment({
+      titulo: "Ida",
+      origemCodigo: origem || "",
+      origemNome: getAirportName(origem || ""),
+      destinoCodigo: destino || "",
+      destinoNome: getAirportName(destino || ""),
+      data: idaData || "",
+      partida: idaPartida || "",
+      chegada: idaChegada || "",
+      numeroVoo: numeroVoo || "",
+      passageiros: paxList,
+      assentos: assentos || [],
+    })}
+    ${hasVolta ? flightSegment({
+      titulo: "Volta",
+      origemCodigo: destino || "",
+      origemNome: getAirportName(destino || ""),
+      destinoCodigo: origem || "",
+      destinoNome: getAirportName(origem || ""),
+      data: voltaData || "",
+      partida: voltaPartida || "",
+      chegada: voltaChegada || "",
+      numeroVoo: numeroVoo || "",
+      passageiros: paxList,
+      assentos: assentos || [],
+    }) : ""}
+  ` : `
+    <div style="background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="font-size:13px;font-weight:700;color:${gray800};margin-bottom:12px;">Viajantes</div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${gray100};border-radius:8px;border-collapse:separate;border-spacing:0;">
+        <tr style="background:${gray100};">
+          <th style="padding:10px 12px;text-align:left;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Passageiro</th>
+          <th style="padding:10px 12px;text-align:center;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Bagagem</th>
+          <th style="padding:10px 12px;text-align:center;font-size:11px;color:${gray600};font-weight:700;text-transform:uppercase;">Assento</th>
+        </tr>
+        ${paxList.map((p: any, i: number) => `
+          <tr>
+            <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:13px;color:${gray800};font-weight:600;">${p.nomeCompleto || p.nome || "—"}</td>
+            <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};text-align:center;">0</td>
+            <td style="padding:10px 12px;border-bottom:1px solid ${gray100};font-size:12px;color:${gray600};text-align:center;">${(assentos || [])[i] || "Selecionar assento"}</td>
+          </tr>
+        `).join("")}
+      </table>
+    </div>
+  `;
 
   const html = emailWrapper(`
-    ${emailHeader("Reserva Confirmada", "Sua solicitação foi recebida com sucesso", "✅")}
-    <div style="max-width:600px;margin:-20px auto 0;padding:0 16px 20px;">
-      ${cardBlock(`
-        <h2 style="font-size:18px;font-weight:800;color:${gray800};margin:0 0 8px;">Olá, ${paxName}!</h2>
-        <p style="font-size:14px;color:${gray600};line-height:1.6;margin:0;">
-          Sua reserva foi registrada com sucesso em nosso sistema. Em breve um atendente entrará em contato com os próximos passos.
-        </p>
-      `)}
-      ${cardBlock(`
-        <div style="text-align:center;padding:8px 0;">
-          <div style="font-size:11px;color:${gray400};font-weight:600;text-transform:uppercase;letter-spacing:2px;">Código da Reserva</div>
-          <div style="font-size:32px;font-weight:900;color:${brandColor};font-family:'Courier New',monospace;letter-spacing:5px;margin-top:8px;">${codigoReserva || "—"}</div>
-          <div style="margin-top:12px;">
-            <span style="display:inline-block;background:${successGreen};color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;">CONFIRMADA</span>
-          </div>
-        </div>
-      `)}
-      ${cardBlock(`
-        ${sectionTitle("Passageiros")}
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr style="background:${gray100};border-radius:8px;">
-            <th style="padding:10px 16px;text-align:center;font-size:10px;color:${gray400};font-weight:700;">#</th>
-            <th style="padding:10px 16px;text-align:left;font-size:10px;color:${gray400};font-weight:700;">NOME</th>
-            <th style="padding:10px 16px;text-align:left;font-size:10px;color:${gray400};font-weight:700;">CPF</th>
-            <th style="padding:10px 16px;text-align:left;font-size:10px;color:${gray400};font-weight:700;">ASSENTO</th>
-          </tr>
-          ${paxRows}
-        </table>
-      `)}
-      ${cardBlock(`
-        ${sectionTitle("Informações")}
-        <table width="100%" cellpadding="0" cellspacing="0">
-          ${infoRow("Método de Pagamento", (metodoPagamento || "pix").toUpperCase())}
-          ${infoRow("Status", "⏳ Aguardando processamento")}
-          ${infoRow("Passageiros", String(paxList.length))}
-        </table>
-      `)}
+    ${emailHeader()}
+    <div style="max-width:640px;margin:0 auto;padding:24px 16px 0;">
       ${cardBlock(`
         <div style="text-align:center;">
-          <div style="font-size:13px;color:${gray600};line-height:1.6;">
-            <strong style="color:${gray800};">Próximos passos:</strong><br/>
-            Um atendente entrará em contato via WhatsApp para dar continuidade à sua reserva.
-            Tenha em mãos seus documentos de identificação.
+          <div style="font-size:48px;line-height:1;margin-bottom:10px;">🎫</div>
+          <h1 style="font-size:24px;font-weight:800;color:${gray800};margin:0 0 6px;">Oi, ${paxName}!</h1>
+          <div style="font-size:18px;font-weight:700;color:${brandColor};margin-bottom:14px;">Sua compra foi um sucesso</div>
+          <p style="font-size:13px;color:${gray600};margin:0 0 18px;line-height:1.6;">
+            Obrigada por fazer uma escolha Azul!<br/>Seu código de reserva é:
+          </p>
+          <div style="display:inline-block;padding:12px 28px;background:${gray100};border-radius:10px;font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:${brandColor};letter-spacing:4px;">
+            ${codigoReserva || "—"}
+          </div>
+          <div style="margin-top:14px;">
+            <span style="display:inline-block;background:${successGreen};color:#fff;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">Confirmada</span>
           </div>
         </div>
       `)}
+
+      <div style="font-size:15px;font-weight:800;color:${gray800};padding:0 4px 12px;">
+        Confira os detalhes da sua reserva:
+      </div>
+
+      ${flightBlocks}
     </div>
-  `, companhia);
+
+    ${promoBanners()}
+  `, companhia || "Azul");
 
   return { subject, html };
 };
