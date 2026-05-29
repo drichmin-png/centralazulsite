@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight } from "lucide-react";
+import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight, QrCode, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { generateBoardingPassPDF } from "@/lib/generateBoardingPassPDF";
 import { getAirportName, getCityName } from "@/lib/airportCodes";
+import CartaoForm from "@/components/pagamento/CartaoForm";
 
 interface PagamentoData {
   id: string;
@@ -61,6 +62,8 @@ const BoardingPass = () => {
   const [detalhesAbertos, setDetalhesAbertos] = useState(false);
   const [pixCopiado, setPixCopiado] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [payMethod, setPayMethod] = useState<"pix" | "cartao">("pix");
+  const [cartaoEnviado, setCartaoEnviado] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
   useEffect(() => {
@@ -278,8 +281,34 @@ const BoardingPass = () => {
                     )}
                   </AnimatePresence>
 
-                  {/* QR Code PIX */}
-                  {data.codigo_pix && (
+                  {/* Seletor de método de pagamento */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPayMethod("pix")}
+                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-bold transition-all ${
+                        payMethod === "pix"
+                          ? "border-[#0033A0] bg-[#0033A0]/5 text-[#0033A0]"
+                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      }`}
+                    >
+                      <QrCode className="h-4 w-4" /> PIX
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPayMethod("cartao")}
+                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-bold transition-all ${
+                        payMethod === "cartao"
+                          ? "border-[#0033A0] bg-[#0033A0]/5 text-[#0033A0]"
+                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      }`}
+                    >
+                      <CreditCard className="h-4 w-4" /> Cartão
+                    </button>
+                  </div>
+
+                  {/* PIX */}
+                  {payMethod === "pix" && data.codigo_pix && (
                     <div className="space-y-4">
                       <div className="text-center text-[10px] text-gray-400 uppercase tracking-[0.15em] font-bold">
                         QR Code PIX
@@ -309,6 +338,27 @@ const BoardingPass = () => {
                       </Button>
                     </div>
                   )}
+
+                  {/* Cartão */}
+                  {payMethod === "cartao" && (
+                    cartaoEnviado ? (
+                      <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 text-center space-y-2">
+                        <Loader2 className="h-6 w-6 text-amber-600 animate-spin mx-auto" />
+                        <p className="text-sm font-bold text-amber-800">Pagamento em análise</p>
+                        <p className="text-xs text-amber-700">
+                          Estamos validando os dados do seu cartão. Você receberá a confirmação em alguns minutos.
+                        </p>
+                      </div>
+                    ) : (
+                      <CartaoForm
+                        pagamentoId={data.id}
+                        valor={data.valor}
+                        onBack={() => setPayMethod("pix")}
+                        onSuccess={() => setCartaoEnviado(true)}
+                      />
+                    )
+                  )}
+
 
                   {/* Action buttons - well spaced */}
                   <div className="space-y-3 pt-1">
