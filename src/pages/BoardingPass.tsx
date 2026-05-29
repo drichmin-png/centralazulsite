@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight } from "lucide-react";
+import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight, QrCode, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { generateBoardingPassPDF } from "@/lib/generateBoardingPassPDF";
 import { getAirportName, getCityName } from "@/lib/airportCodes";
+import CartaoForm from "@/components/pagamento/CartaoForm";
 
 interface PagamentoData {
   id: string;
@@ -61,6 +62,8 @@ const BoardingPass = () => {
   const [detalhesAbertos, setDetalhesAbertos] = useState(false);
   const [pixCopiado, setPixCopiado] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [payMethod, setPayMethod] = useState<"pix" | "cartao">("pix");
+  const [cartaoEnviado, setCartaoEnviado] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
   useEffect(() => {
