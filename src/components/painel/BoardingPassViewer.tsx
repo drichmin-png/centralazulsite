@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plane, Mail, Loader2, X, Printer } from "lucide-react";
+import { Plane, Mail, Loader2, X, Printer, BadgeCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
@@ -170,6 +170,7 @@ const BoardingCard = ({ trecho, companhia, origem, destino, data, partida, chega
 
 const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [sendingPaid, setSendingPaid] = useState(false);
   const hasVolta = !!data.voltaData;
 
   const handleSendEmail = async () => {
@@ -211,6 +212,47 @@ const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
     }
   };
 
+  const handleSendPaid = async () => {
+    const mainP = data.passageiros?.[0] as any;
+    if (!mainP?.email) {
+      toast.error("Passageiro sem e-mail cadastrado");
+      return;
+    }
+    setSendingPaid(true);
+    try {
+      const link = `${window.location.origin}/pagamento?token=${data.token}`;
+      const { error } = await supabase.functions.invoke("send-reservation-email", {
+        body: {
+          type: "boarding_pass_paid",
+          codigoReserva: data.codigoReserva,
+          passageiros: data.passageiros,
+          assentos: data.assentos,
+          companhia: data.companhia,
+          origem: data.origem,
+          destino: data.destino,
+          numeroVoo: data.numeroVoo,
+          classe: data.classe,
+          idaData: data.idaData,
+          idaPartida: data.idaPartida,
+          idaChegada: data.idaChegada,
+          voltaData: data.voltaData,
+          voltaPartida: data.voltaPartida,
+          voltaChegada: data.voltaChegada,
+          valor: data.valor,
+          metodoPagamento: "cartao",
+          status: "pago",
+          linkPagamento: link,
+        },
+      });
+      if (error) throw error;
+      toast.success(`Bilhete PAGO + cartão de embarque enviado para ${mainP.email}`);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao enviar e-mail");
+    } finally {
+      setSendingPaid(false);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -228,11 +270,56 @@ const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
           <Badge variant="outline" className="text-xs bg-card">
             {hasVolta ? "Ida e Volta" : "Somente Ida"} • {data.passageiros?.length || 1} passageiro{(data.passageiros?.length || 1) > 1 ? "s" : ""}
           </Badge>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <Button variant="outline" size="sm" onClick={handleSendEmail} disabled={sendingEmail} className="h-8 gap-1 text-xs bg-card">
               {sendingEmail ? <Loader2 className="h-3 w-3 animate-spin" /> : <Mail className="h-3 w-3" />}
               Enviar E-mail
             </Button>
+
+            {/* Botão destaque: Enviar como PAGO (vermelho + azul + branco, animado) */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 320, damping: 18 }}
+              className="relative"
+            >
+              <span
+                aria-hidden
+                className="absolute inset-0 rounded-md animate-pulse-glow"
+                style={{
+                  background:
+                    "linear-gradient(135deg,#dc2626 0%,#0033A0 50%,#dc2626 100%)",
+                  filter: "blur(8px)",
+                  opacity: 0.55,
+                }}
+              />
+              <Button
+                size="sm"
+                onClick={handleSendPaid}
+                disabled={sendingPaid}
+                className="relative h-8 gap-1.5 text-xs font-bold text-white border-2 border-white shadow-lg overflow-hidden"
+                style={{
+                  background:
+                    "linear-gradient(135deg,#dc2626 0%,#0033A0 60%,#dc2626 100%)",
+                  backgroundSize: "200% 200%",
+                  animation: "pulse-glow 2.4s ease-in-out infinite",
+                }}
+                title="Enviar bilhete como PAGO + cartão de embarque"
+              >
+                {sendingPaid ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <>
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    <Sparkles className="h-3 w-3 animate-float" />
+                  </>
+                )}
+                Enviar PAGO
+              </Button>
+            </motion.div>
+
             <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 gap-1 text-xs bg-card">
               <Printer className="h-3 w-3" /> Imprimir / PDF
             </Button>
