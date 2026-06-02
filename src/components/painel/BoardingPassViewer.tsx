@@ -170,6 +170,7 @@ const BoardingCard = ({ trecho, companhia, origem, destino, data, partida, chega
 
 const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [sendingPaid, setSendingPaid] = useState(false);
   const hasVolta = !!data.voltaData;
 
   const handleSendEmail = async () => {
