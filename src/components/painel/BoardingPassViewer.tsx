@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plane, Mail, Loader2, X, Printer } from "lucide-react";
+import { Plane, Mail, Loader2, X, Printer, BadgeCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
