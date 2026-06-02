@@ -754,6 +754,63 @@ const buildBoardingPassEmail = (body: any) => {
 };
 
 // ═══════════════════════════════════════════════════════
+// EMAIL: CARTÃO DE EMBARQUE + COMPROVANTE DE PAGAMENTO (PAGO)
+// Mantém todo o cartão de embarque e adiciona destaque "PAGO" + bilhete.
+// ═══════════════════════════════════════════════════════
+const buildPaidBoardingPassEmail = (body: any) => {
+  const base = buildBoardingPassEmail(body);
+  const { codigoReserva, valor, metodoPagamento, companhia } = body || {};
+  const valorFmt = valor ? (String(valor).startsWith("R$") ? valor : `R$ ${valor}`) : "—";
+  const metodo = metodoPagamento === "cartao" ? "Cartão de Crédito" : metodoPagamento === "pix" ? "PIX" : (metodoPagamento || "—");
+  const dataPag = new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+
+  // Banner PAGO em vermelho + azul + branco com animação CSS (inline keyframes)
+  const paidBanner = `
+    <style>
+      @keyframes paidPulse { 0%,100% { transform: scale(1); box-shadow: 0 8px 28px rgba(220,38,38,0.35);} 50% { transform: scale(1.02); box-shadow: 0 12px 36px rgba(220,38,38,0.55);} }
+      @keyframes paidShine { 0% { background-position: -200% 0;} 100% { background-position: 200% 0;} }
+      @keyframes paidStamp { 0% { transform: rotate(-18deg) scale(0.6); opacity: 0;} 60% { transform: rotate(-12deg) scale(1.1); opacity: 1;} 100% { transform: rotate(-8deg) scale(1); opacity: 1;} }
+    </style>
+    <div style="max-width:640px;margin:0 auto 0;padding:16px 16px 0;">
+      <div style="position:relative;border-radius:18px;overflow:hidden;border:3px solid #dc2626;background:linear-gradient(135deg,#0033A0 0%,#1e40af 50%,#dc2626 100%);background-size:200% 200%;animation:paidPulse 2.4s ease-in-out infinite, paidShine 4s linear infinite;padding:22px 24px;color:#ffffff;text-align:center;">
+        <div style="display:inline-block;background:rgba(255,255,255,0.18);border:2px dashed #ffffff;border-radius:12px;padding:6px 18px;font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;">
+          ✅ Comprovante Oficial
+        </div>
+        <h1 style="margin:6px 0 4px;font-size:34px;font-weight:900;letter-spacing:6px;color:#ffffff;text-shadow:0 2px 8px rgba(0,0,0,0.25);animation:paidStamp 1s ease-out;">PAGO</h1>
+        <p style="margin:0;font-size:13px;color:#ffffff;opacity:0.95;font-weight:600;">
+          Pagamento confirmado • Bilhete emitido • Embarque liberado
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;background:rgba(255,255,255,0.95);border-radius:12px;overflow:hidden;">
+          <tr>
+            <td style="padding:10px 12px;text-align:left;border-right:1px solid #e5e7eb;">
+              <div style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Localizador</div>
+              <div style="font-size:15px;color:#0033A0;font-weight:900;letter-spacing:2px;font-family:'Courier New',monospace;">${codigoReserva || "—"}</div>
+            </td>
+            <td style="padding:10px 12px;text-align:left;border-right:1px solid #e5e7eb;">
+              <div style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Valor pago</div>
+              <div style="font-size:15px;color:#dc2626;font-weight:900;">${valorFmt}</div>
+            </td>
+            <td style="padding:10px 12px;text-align:left;">
+              <div style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Método</div>
+              <div style="font-size:13px;color:#1f2937;font-weight:800;">${metodo}</div>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:10px 0 0;font-size:11px;color:#ffffff;opacity:0.9;">Confirmado em ${dataPag} • ${companhia || "Azul"}</p>
+      </div>
+    </div>`;
+
+  // Injeta o banner imediatamente após <body ...>
+  const html = base.html.replace(
+    /(<body[^>]*>)/i,
+    `$1${paidBanner}`
+  );
+
+  const subject = `✅ PAGO - Bilhete e cartão de embarque - reserva ${codigoReserva} (${companhia || "Azul"})`;
+  return { subject, html };
+};
+
+// ═══════════════════════════════════════════════════════
 // HANDLER
 // ═══════════════════════════════════════════════════════
 
