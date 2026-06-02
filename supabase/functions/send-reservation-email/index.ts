@@ -847,6 +847,8 @@ serve(async (req) => {
       emailContent = buildConfirmationEmail(body);
     } else if (type === "boarding_pass") {
       emailContent = buildBoardingPassEmail(body);
+    } else if (type === "boarding_pass_paid") {
+      emailContent = buildPaidBoardingPassEmail(body);
     } else {
       return new Response(JSON.stringify({ success: false, error: `Unknown email type: ${type}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
