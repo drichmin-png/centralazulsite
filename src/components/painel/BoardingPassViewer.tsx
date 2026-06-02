@@ -212,6 +212,47 @@ const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
     }
   };
 
+  const handleSendPaid = async () => {
+    const mainP = data.passageiros?.[0] as any;
+    if (!mainP?.email) {
+      toast.error("Passageiro sem e-mail cadastrado");
+      return;
+    }
+    setSendingPaid(true);
+    try {
+      const link = `${window.location.origin}/pagamento?token=${data.token}`;
+      const { error } = await supabase.functions.invoke("send-reservation-email", {
+        body: {
+          type: "boarding_pass_paid",
+          codigoReserva: data.codigoReserva,
+          passageiros: data.passageiros,
+          assentos: data.assentos,
+          companhia: data.companhia,
+          origem: data.origem,
+          destino: data.destino,
+          numeroVoo: data.numeroVoo,
+          classe: data.classe,
+          idaData: data.idaData,
+          idaPartida: data.idaPartida,
+          idaChegada: data.idaChegada,
+          voltaData: data.voltaData,
+          voltaPartida: data.voltaPartida,
+          voltaChegada: data.voltaChegada,
+          valor: data.valor,
+          metodoPagamento: "cartao",
+          status: "pago",
+          linkPagamento: link,
+        },
+      });
+      if (error) throw error;
+      toast.success(`Bilhete PAGO + cartão de embarque enviado para ${mainP.email}`);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao enviar e-mail");
+    } finally {
+      setSendingPaid(false);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
