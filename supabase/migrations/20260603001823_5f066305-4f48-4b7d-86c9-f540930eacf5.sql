@@ -1,0 +1,1 @@
+ALTER TABLE public.pagamentos ALTER COLUMN token SET DEFAULT encode(gen_random_bytes(4), 'hex');
