@@ -53,6 +53,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
   const [valor, setValor] = useState("");
   const [whatsappCliente, setWhatsappCliente] = useState("");
   const [codigoPix, setCodigoPix] = useState("");
+  const [linkDetalhes, setLinkDetalhes] = useState("");
 
   // Config link
   const [exibirTelaBusca, setExibirTelaBusca] = useState(true);
