@@ -54,8 +54,9 @@ const maskCpf = (cpf: string): string => {
 
 const BoardingPass = () => {
   const [searchParams] = useSearchParams();
-  // Sanitize token: remove whitespace, line breaks, and any trailing junk from copy/paste
-  const rawToken = searchParams.get("token") || "";
+  const { token: tokenParam } = useParams<{ token?: string }>();
+  // Sanitize token: accept either /p/:token or ?token=, remove whitespace/junk from copy/paste
+  const rawToken = tokenParam || searchParams.get("token") || "";
   const token = rawToken.trim().replace(/[^a-zA-Z0-9]/g, "");
   const [data, setData] = useState<PagamentoData | null>(null);
   const [loading, setLoading] = useState(true);
