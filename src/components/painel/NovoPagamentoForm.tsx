@@ -868,6 +868,21 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
         </div>
       )}
 
+      {/* Link de Detalhes do Voo */}
+      <div className="mb-5">
+        <Label className="text-xs">🔗 Link de detalhes do voo (opcional)</Label>
+        <Input
+          type="url"
+          value={linkDetalhes}
+          onChange={(e) => setLinkDetalhes(e.target.value)}
+          placeholder="https://... (ex: link da reserva, itinerário, etc.)"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Será exibido para o cliente como o botão <strong>"Mais detalhes do voo"</strong> na tela de pagamento.
+        </p>
+      </div>
+
+
       {/* Submit */}
       <Button onClick={handleSubmit} disabled={isProcessingGateway} className="w-full h-12 text-sm font-semibold">
         {isProcessingGateway ? (
