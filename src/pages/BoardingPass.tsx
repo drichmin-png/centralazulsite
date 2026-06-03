@@ -698,7 +698,7 @@ const BoardingPass = () => {
                       className="w-full rounded-2xl bg-[#0033A0]/5 border border-[#0033A0]/20 py-3.5 px-4 flex items-center justify-center gap-2 hover:bg-[#0033A0]/10 transition-colors active:scale-[0.98] mb-4"
                     >
                       <ExternalLink className="h-4 w-4 text-[#0033A0]" />
-                      <span className="text-sm font-bold text-[#0033A0]">Mais detalhes do voo</span>
+                      <span className="text-sm font-bold text-[#0033A0]">ENCONTRE SUA RESERVA.</span>
                     </a>
                   )}
 
