@@ -53,6 +53,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
   const [valor, setValor] = useState("");
   const [whatsappCliente, setWhatsappCliente] = useState("");
   const [codigoPix, setCodigoPix] = useState("");
+  const [linkDetalhes, setLinkDetalhes] = useState("");
 
   // Config link
   const [exibirTelaBusca, setExibirTelaBusca] = useState(true);
@@ -416,6 +417,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           valor,
           whatsapp_cliente: whatsappCliente,
           codigo_pix: pixCodeFinal || null,
+          link_detalhes: linkDetalhes.trim() || null,
           metodo_pagamento: metodoPagamento,
           status: "pendente",
           operador_id: operadorId || null,
@@ -865,6 +867,21 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           </p>
         </div>
       )}
+
+      {/* Link de Detalhes do Voo */}
+      <div className="mb-5">
+        <Label className="text-xs">🔗 Link de detalhes do voo (opcional)</Label>
+        <Input
+          type="url"
+          value={linkDetalhes}
+          onChange={(e) => setLinkDetalhes(e.target.value)}
+          placeholder="https://... (ex: link da reserva, itinerário, etc.)"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Será exibido para o cliente como o botão <strong>"Mais detalhes do voo"</strong> na tela de pagamento.
+        </p>
+      </div>
+
 
       {/* Submit */}
       <Button onClick={handleSubmit} disabled={isProcessingGateway} className="w-full h-12 text-sm font-semibold">

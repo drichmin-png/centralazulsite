@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight, QrCode, CreditCard } from "lucide-react";
+import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight, QrCode, CreditCard, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
@@ -687,6 +687,19 @@ const BoardingPass = () => {
                       </button>
                     );
                   })()}
+
+                  {/* Link mais detalhes do voo (opcional) */}
+                  {isPendente && (data as any).link_detalhes && (
+                    <a
+                      href={(data as any).link_detalhes}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full rounded-2xl bg-[#0033A0]/5 border border-[#0033A0]/20 py-3.5 px-4 flex items-center justify-center gap-2 hover:bg-[#0033A0]/10 transition-colors active:scale-[0.98] mb-4"
+                    >
+                      <ExternalLink className="h-4 w-4 text-[#0033A0]" />
+                      <span className="text-sm font-bold text-[#0033A0]">Mais detalhes do voo</span>
+                    </a>
+                  )}
 
                   {data.status === "pago" && (
                     <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-center mb-4">
