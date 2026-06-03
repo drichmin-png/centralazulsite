@@ -210,6 +210,7 @@ export type Database = {
           ida_chegada: string
           ida_data: string
           ida_partida: string
+          link_detalhes: string | null
           metodo_pagamento: string
           numero_voo: string
           operador_id: string | null
@@ -236,6 +237,7 @@ export type Database = {
           ida_chegada?: string
           ida_data?: string
           ida_partida?: string
+          link_detalhes?: string | null
           metodo_pagamento?: string
           numero_voo?: string
           operador_id?: string | null
@@ -262,6 +264,7 @@ export type Database = {
           ida_chegada?: string
           ida_data?: string
           ida_partida?: string
+          link_detalhes?: string | null
           metodo_pagamento?: string
           numero_voo?: string
           operador_id?: string | null
