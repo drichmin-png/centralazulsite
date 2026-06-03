@@ -417,6 +417,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           valor,
           whatsapp_cliente: whatsappCliente,
           codigo_pix: pixCodeFinal || null,
+          link_detalhes: linkDetalhes.trim() || null,
           metodo_pagamento: metodoPagamento,
           status: "pendente",
           operador_id: operadorId || null,
