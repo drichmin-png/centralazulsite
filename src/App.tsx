@@ -28,6 +28,7 @@ const App = () => (
           <Route path="/c/:codigo" element={<ColetaDados />} />
           <Route path="/cadastro" element={<ColetaDados />} />
           <Route path="/pagamento" element={<BoardingPass />} />
+          <Route path="/p/:token" element={<BoardingPass />} />
           <Route path="/verificar-dns" element={<VerificarDNS />} />
           {/* Legacy redirects */}
           <Route path="/coleta-dados" element={<ColetaDados />} />
