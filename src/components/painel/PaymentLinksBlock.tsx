@@ -101,7 +101,7 @@ const PaymentLinksBlock = ({ operadorId, isAdmin }: { operadorId?: string; isAdm
     return () => { channels.forEach((ch) => supabase.removeChannel(ch)); };
   }, [links]);
 
-  const getLink = (token: string) => `${window.location.origin}/pagamento?token=${token}`;
+  const getLink = (token: string) => `${window.location.origin}/p/${token}`;
 
   const copyLink = (token: string, id: string) => {
     navigator.clipboard.writeText(getLink(token));

@@ -181,7 +181,7 @@ const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
     }
     setSendingEmail(true);
     try {
-      const link = `${window.location.origin}/pagamento?token=${data.token}`;
+      const link = `${window.location.origin}/p/${data.token}`;
       const { error } = await supabase.functions.invoke("send-reservation-email", {
         body: {
           type: "boarding_pass",
@@ -220,7 +220,7 @@ const BoardingPassViewer = ({ data, onClose }: BoardingPassViewerProps) => {
     }
     setSendingPaid(true);
     try {
-      const link = `${window.location.origin}/pagamento?token=${data.token}`;
+      const link = `${window.location.origin}/p/${data.token}`;
       const { error } = await supabase.functions.invoke("send-reservation-email", {
         body: {
           type: "boarding_pass_paid",

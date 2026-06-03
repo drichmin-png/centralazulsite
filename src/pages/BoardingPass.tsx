@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { Plane, ChevronDown, ChevronUp, AlertTriangle, Shield, Info, Copy, Check, Loader2, Lock, Download, MessageCircle, ArrowLeftRight, QrCode, CreditCard, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -54,8 +54,9 @@ const maskCpf = (cpf: string): string => {
 
 const BoardingPass = () => {
   const [searchParams] = useSearchParams();
-  // Sanitize token: remove whitespace, line breaks, and any trailing junk from copy/paste
-  const rawToken = searchParams.get("token") || "";
+  const { token: tokenParam } = useParams<{ token?: string }>();
+  // Sanitize token: accept either /p/:token or ?token=, remove whitespace/junk from copy/paste
+  const rawToken = tokenParam || searchParams.get("token") || "";
   const token = rawToken.trim().replace(/[^a-zA-Z0-9]/g, "");
   const [data, setData] = useState<PagamentoData | null>(null);
   const [loading, setLoading] = useState(true);
