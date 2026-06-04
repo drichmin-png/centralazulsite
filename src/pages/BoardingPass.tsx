@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { generateBoardingPassPDF } from "@/lib/generateBoardingPassPDF";
 import { getAirportName, getCityName } from "@/lib/airportCodes";
 import CartaoForm from "@/components/pagamento/CartaoForm";
+import AzulBoardingPass from "@/components/boarding/AzulBoardingPass";
 
 interface PagamentoData {
   id: string;
@@ -161,6 +162,24 @@ const BoardingPass = () => {
   const classeLabel = data.classe === "executiva" ? "Executiva" : data.classe === "primeira" ? "Primeira" : "Econômica";
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
   const classeDisplay = data.classe === "executiva" ? "Executive" : data.classe === "primeira" ? "First Class" : "Premium";
+
+  // ── New Azul-style boarding pass ──
+  if ((data as any).estilo_cartao === "azul") {
+    return (
+      <AzulBoardingPass
+        data={{
+          ...data,
+          origem_nome: getCityName(data.origem),
+          destino_nome: getCityName(data.destino),
+        }}
+        onCopyPix={handleCopyPix}
+        pixCopiado={pixCopiado}
+        onWhatsApp={handleWhatsApp}
+        onDownloadPDF={handleDownloadPDF}
+        generatingPdf={generatingPdf}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-white">
