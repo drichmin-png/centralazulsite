@@ -206,6 +206,7 @@ export type Database = {
           created_at: string
           descricao: string | null
           destino: string
+          estilo_cartao: string
           id: string
           ida_chegada: string
           ida_data: string
@@ -233,6 +234,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           destino?: string
+          estilo_cartao?: string
           id?: string
           ida_chegada?: string
           ida_data?: string
@@ -260,6 +262,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           destino?: string
+          estilo_cartao?: string
           id?: string
           ida_chegada?: string
           ida_data?: string
