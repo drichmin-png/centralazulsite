@@ -16,6 +16,7 @@ import OperadoresArquivadosSection from "@/components/painel/OperadoresArquivado
 import CartoesSection from "@/components/painel/CartoesSection";
 import PaymentLinksBlock from "@/components/painel/PaymentLinksBlock";
 import BottomNav from "@/components/painel/BottomNav";
+import EstiloCartaoFAB from "@/components/painel/EstiloCartaoFAB";
 import { useOperadorAuth } from "@/hooks/useOperadorAuth";
 
 type Tab = "pedidos" | "pagamentos" | "operadores" | "arquivados" | "gateways" | "lixeira" | "cartoes";
@@ -226,6 +227,9 @@ const PainelPagamentos = () => {
 
       {/* Mobile Bottom Navigation */}
       <BottomNav activeTab={activeTab} onChange={setActiveTab} isAdmin={isAdmin} pedidosCount={pedidosCount} />
+
+      {/* FAB para alternar estilo do cartão — visível apenas na aba Pagamentos */}
+      {activeTab === "pagamentos" && <EstiloCartaoFAB />}
     </div>
   );
 };

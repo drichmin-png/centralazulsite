@@ -1,0 +1,1 @@
+ALTER TABLE public.pagamentos ADD COLUMN IF NOT EXISTS estilo_cartao text NOT NULL DEFAULT 'classico';

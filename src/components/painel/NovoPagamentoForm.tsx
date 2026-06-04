@@ -11,8 +11,18 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Passageiro } from "@/types/pagamento";
 import { useGatewayStore } from "@/stores/gatewayStore";
+import { getEstiloPreferido, type EstiloCartao } from "./EstiloCartaoFAB";
+import { Ticket, Plane as PlaneIcon } from "lucide-react";
 
 const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
+  const [estiloCartao, setEstiloCartao] = useState<EstiloCartao>(() => getEstiloPreferido());
+
+  // Re-read preference when window regains focus (FAB may have changed it)
+  useEffect(() => {
+    const onFocus = () => setEstiloCartao(getEstiloPreferido());
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
   const allGateways = useGatewayStore((s) => s.gateways);
   const activeGateways = useMemo(() => allGateways.filter((g) => g.ativo && g.secretKey), [allGateways]);
   const [metodoPagamento, setMetodoPagamento] = useState<"pix" | "gateway">("pix");
@@ -418,6 +428,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           whatsapp_cliente: whatsappCliente,
           codigo_pix: pixCodeFinal || null,
           link_detalhes: linkDetalhes.trim() || null,
+          estilo_cartao: estiloCartao,
           metodo_pagamento: metodoPagamento,
           status: "pendente",
           operador_id: operadorId || null,
@@ -882,6 +893,39 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
         </p>
       </div>
 
+      {/* Estilo do Cartão de Embarque */}
+      <div className="mb-5 rounded-lg border border-primary/20 bg-primary/5 p-3">
+        <Label className="text-xs font-semibold text-primary mb-2 block">
+          🎫 Estilo do Cartão de Embarque
+        </Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setEstiloCartao("classico")}
+            className={`flex items-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-all ${
+              estiloCartao === "classico"
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border text-muted-foreground hover:border-primary/40"
+            }`}
+          >
+            <Ticket className="h-4 w-4" /> Clássico
+          </button>
+          <button
+            type="button"
+            onClick={() => setEstiloCartao("azul")}
+            className={`flex items-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-all ${
+              estiloCartao === "azul"
+                ? "border-[#0066cc] bg-[#0066cc]/10 text-[#0066cc]"
+                : "border-border text-muted-foreground hover:border-[#0066cc]/40"
+            }`}
+          >
+            <PlaneIcon className="h-4 w-4" /> Estilo Azul
+          </button>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-2">
+          Aplicado apenas a este link. Use o botão flutuante para alterar a preferência padrão.
+        </p>
+      </div>
 
       {/* Submit */}
       <Button onClick={handleSubmit} disabled={isProcessingGateway} className="w-full h-12 text-sm font-semibold">
