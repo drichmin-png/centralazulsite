@@ -17,11 +17,30 @@ import {
   Shield,
   Loader2,
   Download,
+  Briefcase,
+  Backpack,
+  Phone,
+  CreditCard,
+  Facebook,
+  Twitter,
+  Youtube,
+  Instagram,
+  Linkedin,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AzulProps {
   data: any;
@@ -41,7 +60,6 @@ const maskCpf = (cpf: string): string => {
 
 const formatDateLong = (d: string): string => {
   if (!d) return "—";
-  // expect DD/MM/YYYY
   const [dd, mm, yyyy] = d.split("/").map((x) => x.trim());
   if (!yyyy) return d;
   const date = new Date(`${yyyy}-${mm}-${dd}`);
@@ -72,33 +90,62 @@ const AzulBoardingPass = ({
   const [tab, setTab] = useState<"ida" | "volta">("ida");
   const [viajantesOpen, setViajantesOpen] = useState(true);
   const [detalhesVoo, setDetalhesVoo] = useState(false);
+  const [modal, setModal] = useState<null | "bagagem" | "assentos" | "confirmacao" | "servicos" | "alterar" | "cancelar">(null);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
   const isPago = data.status === "pago" || data.status === "taxa_paga";
   const hasVolta = !!data.volta_data;
   const passageiros = data.passageiros || [];
   const destinoNome = data.destino_nome || data.destino || "—";
   const origemNome = data.origem_nome || data.origem || "—";
+  const mainPassenger = passageiros[0] || {};
+  const clienteEmail = mainPassenger.email || "";
+
+  const handleEnviarConfirmacao = async () => {
+    if (!clienteEmail) {
+      toast.error("Nenhum e-mail de cliente encontrado nesta reserva");
+      return;
+    }
+    setSendingEmail(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-reservation-email", {
+        body: { type: "confirmation", ...data },
+      });
+      if (error) throw error;
+      setEmailSent(true);
+      toast.success(`Confirmação enviada para ${clienteEmail}`);
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao enviar e-mail");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleAbrirWhatsAppOperador = () => {
+    if (!data.whatsapp_operador) {
+      toast.error("Atendente não configurou WhatsApp");
+      return;
+    }
+    onWhatsApp();
+  };
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] pb-32">
-      {/* ─── Header dark blue ─── */}
+    <div className="min-h-screen bg-[#f5f7fb] pb-28">
+      {/* Header */}
       <header
         className="sticky top-0 z-30 px-4 pt-5 pb-4 text-white"
-        style={{
-          background: "linear-gradient(180deg, #002a6e 0%, #00194a 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #002a6e 0%, #00194a 100%)" }}
       >
         <div className="max-w-[480px] mx-auto flex items-center justify-between">
-          <button className="p-1">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
+          <button className="p-1"><ArrowLeft className="h-5 w-5" /></button>
           <h1 className="text-base font-semibold tracking-wide">Próxima viagem</h1>
           <div className="w-7" />
         </div>
       </header>
 
       <div className="max-w-[480px] mx-auto px-4 pt-4 space-y-4">
-        {/* ─── Pendência (se pendente) ─── */}
         <AnimatePresence>
           {isPendente && (
             <motion.div
@@ -113,13 +160,12 @@ const AzulBoardingPass = ({
                     Identificamos uma pendência no pagamento da sua viagem
                   </div>
                   <p className="text-[13px] text-gray-600 mt-2 leading-relaxed">
-                    Não se preocupe, você ainda pode concluir essa compra. Entre em contato com seu agente de viagens ou agência e garanta sua reserva.
+                    Não se preocupe, você ainda pode concluir essa compra. Entre em contato com seu agente de viagens e garanta sua reserva.
                   </p>
                 </div>
               </div>
             </motion.div>
           )}
-
           {isPago && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
@@ -134,14 +180,13 @@ const AzulBoardingPass = ({
           )}
         </AnimatePresence>
 
-        {/* ─── Sua viagem para ─── */}
+        {/* Sua viagem para */}
         <div className="border-b border-dashed border-gray-300 pb-5">
           <div className="flex items-start justify-between">
             <h2 className="text-[26px] font-light text-gray-800 leading-tight">
-              Sua viagem para{" "}
-              <span className="text-[#0066cc]">{destinoNome}</span>
+              Sua viagem para <span className="text-[#0066cc]">{destinoNome}</span>
             </h2>
-            <button className="text-[#0066cc] p-1">
+            <button onClick={() => setModal("alterar")} className="text-[#0066cc] p-1">
               <Edit2 className="h-4 w-4" />
             </button>
           </div>
@@ -150,12 +195,11 @@ const AzulBoardingPass = ({
             {hasVolta && <><br />até {formatDateLong(data.volta_data)}</>}
           </p>
           <p className="text-[15px] text-gray-600 mt-3">
-            Código da reserva:{" "}
-            <span className="font-bold text-gray-900">{data.codigo_reserva || "—"}</span>
+            Código da reserva: <span className="font-bold text-gray-900">{data.codigo_reserva || "—"}</span>
           </p>
         </div>
 
-        {/* ─── Viajantes ─── */}
+        {/* Viajantes */}
         <div>
           <h3 className="text-xl text-gray-800 mb-3 font-light">Viajantes</h3>
           <div className="border-t border-b border-gray-200">
@@ -165,14 +209,11 @@ const AzulBoardingPass = ({
             >
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-full border border-gray-300 flex items-center justify-center text-[11px] font-semibold text-gray-600">
-                  {initials(passageiros[0]?.nomeCompleto || passageiros[0]?.nome || "")}
+                  {initials(mainPassenger.nomeCompleto || mainPassenger.nome || "")}
                 </div>
+                <span className="text-sm text-gray-700">{passageiros.length} passageiro(s)</span>
               </div>
-              {viajantesOpen ? (
-                <ChevronUp className="h-5 w-5 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              )}
+              {viajantesOpen ? <ChevronUp className="h-5 w-5 text-gray-500" /> : <ChevronDown className="h-5 w-5 text-gray-500" />}
             </button>
 
             <AnimatePresence initial={false}>
@@ -184,64 +225,26 @@ const AzulBoardingPass = ({
                   className="overflow-hidden"
                 >
                   <div className="pb-4 space-y-3">
-                    {/* Aviso fidelidade */}
-                    <div className="rounded-lg bg-[#eef4fb] border border-[#dbe7f5] p-4 flex gap-3">
-                      <div className="text-[#0066cc] text-xl">👥</div>
-                      <div>
-                        <p className="text-[13px] text-gray-700 leading-snug">
-                          Alguns passageiros não estão pontuando nessa viagem, cadastre-se para acumular pontos no programa de fidelidade
-                        </p>
-                        <button className="text-[#0066cc] text-[13px] font-medium mt-2 underline-offset-2 hover:underline">
-                          Recolher viajantes
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Quick action bar */}
-                    <div className="bg-gray-100 rounded-md flex items-center justify-between px-4 py-3">
-                      <div className="text-gray-500">👤</div>
-                      <div className="flex gap-4 text-gray-500">
-                        <Luggage className="h-4 w-4" />
-                        <Armchair className="h-4 w-4" />
-                      </div>
-                    </div>
-
-                    {/* Lista de passageiros */}
                     {passageiros.map((p: any, i: number) => (
-                      <div
-                        key={i}
-                        className="rounded-lg border border-gray-200 bg-white p-4 flex items-center gap-3"
-                      >
+                      <div key={i} className="rounded-lg border border-gray-200 bg-white p-4 flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full border border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-600">
                           {initials(p.nomeCompleto || p.nome || "")}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[14px] font-semibold text-gray-900 leading-tight">
+                          <div className="text-[14px] font-semibold text-gray-900 leading-tight truncate">
                             {p.nomeCompleto || p.nome || "—"}
                           </div>
                           <div className="text-[12px] text-gray-500">
                             CPF: {maskCpf(p.cpfDocumento || p.cpf || "")}
                           </div>
-                          <div className="text-[12px] text-[#0066cc] mt-0.5">
-                            Inserir nº fidelidade
-                          </div>
-                        </div>
-                        <div className="text-[#0066cc] flex items-center gap-1 text-xs font-medium">
-                          <Luggage className="h-4 w-4" /> 0
+                          {p.assento && (
+                            <div className="text-[12px] text-[#0066cc] mt-0.5 font-semibold">
+                              Assento {p.assento}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
-
-                    {passageiros.length > 0 && (
-                      <div className="rounded-lg bg-[#eef4fb] border-t-0 border border-[#dbe7f5] p-4">
-                        <p className="text-[13px] text-[#0066cc] leading-snug mb-3">
-                          Adicione seu número de fidelidade ou Cadastre-se e acumule pontos no programa.
-                        </p>
-                        <button className="bg-[#0066cc] text-white text-[13px] font-semibold px-4 py-2.5 rounded-md flex items-center gap-2">
-                          Realizar cadastro <ExternalLink className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               )}
@@ -249,16 +252,16 @@ const AzulBoardingPass = ({
           </div>
         </div>
 
-        {/* ─── Voos (tabs) ─── */}
+        {/* Voos */}
         <div className="pt-2">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xl text-gray-800 font-light">Voos</h3>
             <div className="flex items-center gap-3 text-[13px] text-[#0066cc]">
-              <button className="flex items-center gap-1">
+              <button onClick={() => setModal("alterar")} className="flex items-center gap-1">
                 <Edit2 className="h-3.5 w-3.5" /> Alterar voo
               </button>
               <span className="text-gray-300">|</span>
-              <button className="flex items-center gap-1">
+              <button onClick={() => setModal("cancelar")} className="flex items-center gap-1">
                 ✕ Cancelar voo
               </button>
             </div>
@@ -268,31 +271,17 @@ const AzulBoardingPass = ({
             <div className="flex border-b border-gray-200 mb-3">
               <button
                 onClick={() => setTab("ida")}
-                className={`flex-1 py-2.5 text-sm font-semibold relative ${
-                  tab === "ida" ? "text-gray-900" : "text-gray-400"
-                }`}
+                className={`flex-1 py-2.5 text-sm font-semibold relative ${tab === "ida" ? "text-gray-900" : "text-gray-400"}`}
               >
                 {data.origem} ✈ {data.destino}
-                {tab === "ida" && (
-                  <motion.div
-                    layoutId="azul-tab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"
-                  />
-                )}
+                {tab === "ida" && <motion.div layoutId="azul-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />}
               </button>
               <button
                 onClick={() => setTab("volta")}
-                className={`flex-1 py-2.5 text-sm font-semibold relative ${
-                  tab === "volta" ? "text-gray-900" : "text-gray-400"
-                }`}
+                className={`flex-1 py-2.5 text-sm font-semibold relative ${tab === "volta" ? "text-gray-900" : "text-gray-400"}`}
               >
                 {data.destino} ✈ {data.origem}
-                {tab === "volta" && (
-                  <motion.div
-                    layoutId="azul-tab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"
-                  />
-                )}
+                {tab === "volta" && <motion.div layoutId="azul-tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />}
               </button>
             </div>
           )}
@@ -342,11 +331,7 @@ const AzulBoardingPass = ({
               className="w-full bg-gray-50 border-t border-gray-100 py-3 text-[14px] text-[#0066cc] font-medium flex items-center justify-center gap-1"
             >
               {detalhesVoo ? "Ocultar detalhes" : "Mostrar detalhes"}
-              {detalhesVoo ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
+              {detalhesVoo ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </button>
 
             <AnimatePresence>
@@ -377,97 +362,7 @@ const AzulBoardingPass = ({
           </div>
         </div>
 
-        {/* ─── Card Azul Fidelidade ─── */}
-        <div
-          className="rounded-xl p-6 text-white mt-2"
-          style={{ background: "linear-gradient(180deg, #0066cc 0%, #0052a3 100%)" }}
-        >
-          <h3 className="text-[22px] font-light leading-snug">
-            Conheça o <span className="font-bold">Programa Fidelidade</span>
-          </h3>
-          <div className="h-px bg-white/20 my-4" />
-          <p className="text-[14px] leading-relaxed">
-            Sabia que ao se cadastrar, além de acumular pontos com essa viagem, você pode ter benefícios como:
-          </p>
-          <ul className="mt-4 space-y-2.5 text-[14px]">
-            <li className="flex items-center gap-2">
-              <Check className="h-4 w-4 shrink-0" /> Despacho de bagagem gratuito
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="h-4 w-4 shrink-0" /> Embarque prioritário
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="h-4 w-4 shrink-0" /> Acesso a salas VIP
-            </li>
-          </ul>
-          <button className="mt-5 bg-white text-[#0066cc] font-semibold text-[15px] px-6 py-3 rounded-md w-full">
-            Cadastre-se
-          </button>
-        </div>
-
-        {/* ─── Complete sua viagem ─── */}
-        <div className="pt-3">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="h-7 w-7 rounded-full border-2 border-[#0066cc] flex items-center justify-center text-[#0066cc] text-lg">
-              +
-            </div>
-            <h3 className="text-[22px] font-light text-gray-800">Complete sua viagem</h3>
-          </div>
-          <p className="text-[14px] text-[#0066cc] mb-4">
-            Adicione hotéis e ingressos e acumule mais pontos no programa de fidelidade.
-          </p>
-
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { title: "Hotéis", desc: "Sua viagem com conforto e desconto! Ganhe 15% Off no Hotel.", badge: "15%", cta: "CUPOM15", emoji: "🏨" },
-              { title: "Carros", desc: "Mais uma comodidade para sua viagem ser inesquecível!", badge: "15%", cta: "CUPOM15", emoji: "🚗" },
-              { title: "Seguro Viagem", desc: "Mais tranquilidade a partir de R$ 89,95 por pessoa", badge: null, cta: "Adicionar", emoji: "🛡️" },
-              { title: "Ingressos", desc: "Enriqueça sua viagem com Ingressos e Passeios incríveis.", badge: "10%", cta: "Ver opções", emoji: "🎟️" },
-            ].map((card, i) => (
-              <div key={i} className="rounded-xl border border-gray-200 bg-white overflow-hidden flex flex-col">
-                <div className="relative h-24 bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center text-4xl">
-                  {card.badge && (
-                    <span className="absolute top-0 left-0 bg-[#0066cc] text-white text-xs font-bold px-2 py-1">
-                      {card.badge}
-                    </span>
-                  )}
-                  {card.emoji}
-                </div>
-                <div className="p-3 flex-1 flex flex-col">
-                  <div className="text-[16px] text-[#0066cc] font-medium">{card.title}</div>
-                  <p className="text-[12px] text-gray-600 mt-1 leading-snug flex-1">{card.desc}</p>
-                  <div className="border-t border-gray-100 mt-3 pt-2">
-                    <button className="text-[13px] text-[#0066cc] font-semibold flex items-center justify-between w-full">
-                      {card.cta} <ExternalLink className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Busque sua reserva */}
-          {(data as any).link_detalhes && (
-            <a
-              href={(data as any).link_detalhes}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 block rounded-xl border border-gray-200 bg-white p-4"
-            >
-              <div className="flex items-start gap-3 mb-3">
-                <Search className="h-5 w-5 text-[#0066cc] mt-0.5" />
-                <p className="text-[14px] text-gray-700 flex-1">
-                  Não localizou a reserva do seu voo, hotel ou ingresso?
-                </p>
-              </div>
-              <div className="border border-[#0066cc] rounded-md py-3 text-center text-[#0066cc] font-semibold text-[15px]">
-                Busque sua reserva
-              </div>
-            </a>
-          )}
-        </div>
-
-        {/* ─── Pagamento PIX (se pendente) ─── */}
+        {/* PIX */}
         {isPendente && data.codigo_pix && (
           <div className="rounded-xl border-2 border-[#0066cc] bg-white p-5 mt-4">
             <div className="text-center mb-3">
@@ -490,16 +385,12 @@ const AzulBoardingPass = ({
               onClick={onCopyPix}
               className="w-full h-12 rounded-lg bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold"
             >
-              {pixCopiado ? (
-                <><Check className="h-4 w-4 mr-2" /> Copiado!</>
-              ) : (
-                <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>
-              )}
+              {pixCopiado ? <><Check className="h-4 w-4 mr-2" /> Copiado!</> : <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>}
             </Button>
           </div>
         )}
 
-        {/* ─── Bottom actions ─── */}
+        {/* Actions */}
         <div className="space-y-3 pt-2">
           <Button
             variant="outline"
@@ -507,51 +398,286 @@ const AzulBoardingPass = ({
             disabled={generatingPdf}
             className="w-full h-12 rounded-lg border-gray-300 text-gray-700 font-semibold"
           >
-            {generatingPdf ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</>
-            ) : (
-              <><Download className="h-4 w-4 mr-2" /> Baixar bilhete em PDF</>
-            )}
+            {generatingPdf ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</> : <><Download className="h-4 w-4 mr-2" /> Baixar bilhete em PDF</>}
           </Button>
           {data.whatsapp_operador && (
-            <Button
-              onClick={onWhatsApp}
-              className="w-full h-12 rounded-lg bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold"
-            >
+            <Button onClick={onWhatsApp} className="w-full h-12 rounded-lg bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold">
               <MessageCircle className="h-4 w-4 mr-2" /> Falar no WhatsApp
             </Button>
           )}
         </div>
+
+        {/* ─── Rodapé estilo Azul (mobile-friendly) ─── */}
+        <footer className="mt-8 -mx-4 bg-white border-t border-gray-200">
+          <div className="px-4 py-6 space-y-6 text-[13px] text-gray-700">
+            {/* Colunas empilhadas no mobile */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <div>
+                <h4 className="font-bold text-gray-900 mb-2">Ajuda</h4>
+                <ul className="space-y-1.5 text-[12px]">
+                  <li><a className="text-[#0066cc]">Central de ajuda</a></li>
+                  <li><a className="text-[#0066cc]">Sua solicitação</a></li>
+                  <li><a className="text-[#0066cc]">Cancelamento</a></li>
+                  <li><a className="text-[#0066cc]">Check-in</a></li>
+                  <li><a className="text-[#0066cc]">Status do voo</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 mb-2">Conheça</h4>
+                <ul className="space-y-1.5 text-[12px]">
+                  <li><a className="text-[#0066cc]">Programa Fidelidade</a></li>
+                  <li><a className="text-[#0066cc]">Empresas</a></li>
+                  <li><a className="text-[#0066cc]">Mapa de rotas</a></li>
+                  <li><a className="text-[#0066cc]">Revista</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-gray-900 mb-2">Formas de Pagamento</h4>
+              <p className="text-[11px] text-gray-500 mb-2">Crédito</p>
+              <div className="flex flex-wrap gap-1.5">
+                {["Visa","Master","Amex","Hiper","Elo","Diners"].map((b) => (
+                  <span key={b} className="text-[10px] font-bold bg-gray-100 border border-gray-200 rounded px-2 py-1 text-gray-700">
+                    {b}
+                  </span>
+                ))}
+              </div>
+              <p className="text-[11px] text-gray-500 mt-3 mb-2">Outros</p>
+              <div className="flex flex-wrap gap-1.5">
+                <span className="text-[10px] font-bold bg-gray-100 border border-gray-200 rounded px-2 py-1 text-gray-700">PIX</span>
+                <span className="text-[10px] font-bold bg-gray-100 border border-gray-200 rounded px-2 py-1 text-gray-700">Boleto</span>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-[#eef4fb] border border-[#dbe7f5] p-4">
+              <h4 className="font-bold text-gray-900 mb-2">Precisa falar com a gente?</h4>
+              <p className="text-[12px] text-gray-600 mb-3">
+                Fale com seu atendente pelo WhatsApp para suporte imediato.
+              </p>
+              {data.whatsapp_operador && (
+                <button
+                  onClick={onWhatsApp}
+                  className="w-full bg-[#25D366] text-white text-[13px] font-semibold px-3 py-2.5 rounded-md flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="h-4 w-4" /> Bate-papo no WhatsApp
+                </button>
+              )}
+            </div>
+
+            <div>
+              <h4 className="font-bold text-gray-900 mb-2">Nossas redes sociais</h4>
+              <div className="flex gap-3 text-[#0066cc]">
+                <Facebook className="h-5 w-5" />
+                <Twitter className="h-5 w-5" />
+                <Youtube className="h-5 w-5" />
+                <Instagram className="h-5 w-5" />
+                <Linkedin className="h-5 w-5" />
+              </div>
+            </div>
+
+            <div className="border-t border-gray-200 pt-4">
+              <h4 className="font-bold text-gray-900 mb-2 text-[12px]">Condições da tarifa</h4>
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                Esta é uma tarifa promocional com regras específicas de utilização. Compras realizadas estão sujeitas a regras de cancelamento, alteração e reembolso conforme tarifa adquirida.
+              </p>
+              <p className="text-[10px] text-gray-400 mt-3 text-center">
+                © {new Date().getFullYear()} — Todos os direitos reservados
+              </p>
+            </div>
+          </div>
+        </footer>
       </div>
 
-      {/* ─── Bottom action tabs (fixed) ─── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
+      {/* ─── Bottom nav (smaller, clickable) ─── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
         <div className="max-w-[480px] mx-auto grid grid-cols-4">
           {[
-            { icon: Luggage, label: "Bagagens", active: true },
-            { icon: Armchair, label: "Assentos", active: true },
-            { icon: Mail, label: "Confirmação", active: false },
-            { icon: MessageCircle, label: "Mais serviços", active: true },
-          ].map((b, i) => {
+            { key: "bagagem", icon: Luggage, label: "Bagagens" },
+            { key: "assentos", icon: Armchair, label: "Assentos" },
+            { key: "confirmacao", icon: Mail, label: "Confirmação" },
+            { key: "servicos", icon: MessageCircle, label: "Mais serviços" },
+          ].map((b) => {
             const Icon = b.icon;
             return (
-              <button
-                key={i}
-                onClick={() => {
-                  if (b.label === "Confirmação") onDownloadPDF();
-                  if (b.label === "Mais serviços" && data.whatsapp_operador) onWhatsApp();
-                }}
-                className={`flex flex-col items-center gap-1 py-3 text-white text-[11px] font-medium ${
-                  b.active ? "bg-[#0066cc]" : "bg-gray-400"
-                }`}
+              <motion.button
+                key={b.key}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => setModal(b.key as any)}
+                className="flex flex-col items-center gap-0.5 py-2 text-[#0066cc] text-[10px] font-semibold hover:bg-blue-50 transition-colors"
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
                 {b.label}
-              </button>
+              </motion.button>
             );
           })}
         </div>
       </div>
+
+      {/* ─── Modais ─── */}
+      <Dialog open={modal === "bagagem"} onOpenChange={(o) => !o && setModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#0066cc]">
+              <Luggage className="h-5 w-5" /> Bagagens incluídas
+            </DialogTitle>
+            <DialogDescription>
+              Sua reserva tem {passageiros.length} passageiro(s). Cada um tem direito a:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            {passageiros.map((p: any, i: number) => (
+              <div key={i} className="rounded-lg border border-gray-200 p-3">
+                <div className="text-sm font-bold text-gray-900 mb-2">
+                  {p.nomeCompleto || p.nome || `Passageiro ${i + 1}`}
+                </div>
+                <div className="space-y-2 text-[13px]">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Briefcase className="h-4 w-4 text-[#0066cc]" /> 1 bagagem despachada de até <b>23 kg</b>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Backpack className="h-4 w-4 text-[#0066cc]" /> 1 mochila/item pessoal para a cabine
+                  </div>
+                </div>
+              </div>
+            ))}
+            <p className="text-[11px] text-gray-500">
+              Total: {passageiros.length} bagagem(ns) de 23 kg + {passageiros.length} mochila(s) de cabine.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modal === "assentos"} onOpenChange={(o) => !o && setModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#0066cc]">
+              <Armchair className="h-5 w-5" /> Assentos confirmados
+            </DialogTitle>
+            <DialogDescription>
+              Assentos selecionados ao gerar o link da sua reserva:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            {passageiros.map((p: any, i: number) => (
+              <div key={i} className="flex items-center justify-between rounded-lg border border-gray-200 p-3">
+                <div className="text-sm font-semibold text-gray-800 truncate">
+                  {p.nomeCompleto || p.nome || `Passageiro ${i + 1}`}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Armchair className="h-4 w-4 text-[#0066cc]" />
+                  <span className="font-bold text-[#0066cc]">{p.assento || "—"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modal === "confirmacao"} onOpenChange={(o) => { if (!o) { setModal(null); setEmailSent(false); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#0066cc]">
+              <Mail className="h-5 w-5" /> Confirmação por e-mail
+            </DialogTitle>
+            <DialogDescription>
+              Enviar todos os detalhes da reserva para <b>{clienteEmail || "—"}</b>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-[12px] text-amber-900">
+            ⚠️ A liberação para embarque só será feita após o pagamento completo. O comprovante deve ser encaminhado ao atendente para liberação rápida.
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setModal(null)}>Fechar</Button>
+            <Button
+              onClick={handleEnviarConfirmacao}
+              disabled={sendingEmail || emailSent || !clienteEmail}
+              className="bg-[#0066cc] hover:bg-[#0052a3]"
+            >
+              {sendingEmail ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</> : emailSent ? <><Check className="h-4 w-4 mr-2" /> Enviado</> : <><Mail className="h-4 w-4 mr-2" /> Enviar agora</>}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modal === "servicos"} onOpenChange={(o) => !o && setModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#0066cc]">
+              <MessageCircle className="h-5 w-5" /> Mais serviços
+            </DialogTitle>
+            <DialogDescription>
+              Para serviços adicionais, fale com o atendente responsável pela sua reserva.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="rounded-lg border border-gray-200 p-4">
+              <div className="text-[12px] text-gray-500 mb-1">Atendente</div>
+              <div className="font-bold text-gray-900 flex items-center gap-2">
+                <Phone className="h-4 w-4 text-[#0066cc]" />
+                {data.whatsapp_operador || "Não informado"}
+              </div>
+            </div>
+            <Button
+              onClick={handleAbrirWhatsAppOperador}
+              disabled={!data.whatsapp_operador}
+              className="w-full bg-[#25D366] hover:bg-[#20BD5A]"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" /> Falar no WhatsApp
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modal === "alterar"} onOpenChange={(o) => !o && setModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-700">
+              <AlertCircle className="h-5 w-5" /> Alteração não disponível
+            </DialogTitle>
+            <DialogDescription>
+              Esta compra é uma <b>tarifa promocional</b> e não permite alteração direta.
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-[13px] text-gray-700 leading-relaxed">
+            Somente o atendente responsável pela reserva pode realizar alterações. Entre em contato pelo WhatsApp para verificar disponibilidade e condições.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setModal(null)}>Fechar</Button>
+            {data.whatsapp_operador && (
+              <Button onClick={onWhatsApp} className="bg-[#25D366] hover:bg-[#20BD5A]">
+                <MessageCircle className="h-4 w-4 mr-2" /> Falar com atendente
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={modal === "cancelar"} onOpenChange={(o) => !o && setModal(null)}>
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertCircle className="h-5 w-5" /> Aviso Importante
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-[13px] text-gray-700 leading-relaxed">
+            <p>
+              Esta é uma <b>tarifa promocional</b> com condições especiais de emissão. Após a confirmação da compra, cancelamentos, desistências, alterações ou solicitações de encerramento da reserva poderão resultar na <b>perda total dos valores pagos</b>, sem direito a reembolso, conforme as regras aplicáveis à tarifa adquirida.
+            </p>
+            <p>
+              Em situações em que alterações ou cancelamentos sejam permitidos, poderão ser aplicadas <b>multas, taxas operacionais e diferenças tarifárias</b>. Ao finalizar a compra, o cliente concorda expressamente com estas condições e reconhece estar adquirindo uma reserva promocional sujeita a regras específicas de utilização.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setModal(null)}>Entendi</Button>
+            {data.whatsapp_operador && (
+              <Button onClick={onWhatsApp} className="bg-[#25D366] hover:bg-[#20BD5A]">
+                <MessageCircle className="h-4 w-4 mr-2" /> Falar com atendente
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
