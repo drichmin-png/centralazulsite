@@ -114,7 +114,7 @@ const OperadoresSection = () => {
     if (!deleteTarget) return;
     try {
       const { data, error } = await supabase.functions.invoke("operador-auth", {
-        body: { action: "excluir", operadorId: deleteTarget.id },
+        body: { action: "excluir", operadorId: deleteTarget.id, hard: true },
       });
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error);
