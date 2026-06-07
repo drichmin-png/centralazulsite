@@ -41,6 +41,39 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import logoAzul from "@/assets/logo-azul.png.asset.json";
+
+// Subtract minutes from "HH:MM"
+const subtractMinutes = (time: string, minutes: number): string => {
+  if (!time || !time.includes(":")) return "--:--";
+  const [h, m] = time.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return "--:--";
+  const total = (h * 60 + m - minutes + 1440) % 1440;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+};
+
+// Deterministic hash for stable random per reservation
+const hashCode = (s: string): number => {
+  let h = 0;
+  for (let i = 0; i < (s || "").length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+};
+
+const getTerminal = (seed: string): string => {
+  const t = ["1", "2", "3"];
+  return t[hashCode(seed + ":terminal") % t.length];
+};
+
+const getPortao = (seed: string): string => {
+  const letters = ["A", "B", "C", "D", "E"];
+  const h = hashCode(seed + ":portao");
+  const letra = letters[h % letters.length];
+  const num = (h % 25) + 1;
+  return `${letra}${num}`;
+};
 
 interface AzulProps {
   data: any;
@@ -140,9 +173,13 @@ const AzulBoardingPass = ({
       >
         <div className="max-w-[480px] mx-auto flex items-center justify-between">
           <button className="p-1"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-semibold tracking-wide">Próxima viagem</h1>
+          <div className="flex items-center gap-2">
+            <img src={logoAzul.url} alt="Azul" className="h-5 w-auto bg-white rounded px-1 py-0.5" />
+            <h1 className="text-base font-semibold tracking-wide">Próxima viagem</h1>
+          </div>
           <div className="w-7" />
         </div>
+
       </header>
 
       <div className="max-w-[480px] mx-auto px-4 pt-4 space-y-4">
@@ -374,12 +411,13 @@ const AzulBoardingPass = ({
                         </div>
 
                         <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px] text-gray-600">
-                          <div>Embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
-                          <div>Fim do embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
+                          <div>Embarque: <span className="text-gray-900 font-semibold">{subtractMinutes(tab === "ida" ? data.ida_partida : data.volta_partida, 30)}</span></div>
+                          <div>Fim do embarque: <span className="text-gray-900 font-semibold">{subtractMinutes(tab === "ida" ? data.ida_partida : data.volta_partida, 5)}</span></div>
                         </div>
                         <div className="text-[12px] text-gray-600">
-                          Terminal <span className="text-gray-900 font-semibold">--</span> · Portão <span className="text-gray-900 font-semibold">--</span>
+                          Terminal <span className="text-gray-900 font-semibold">{getTerminal(data.codigo_reserva + tab)}</span> · Portão <span className="text-gray-900 font-semibold">{getPortao(data.codigo_reserva + tab)}</span>
                         </div>
+
 
                         <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px]">
                           <div>

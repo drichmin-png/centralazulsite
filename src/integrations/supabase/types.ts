@@ -207,6 +207,8 @@ export type Database = {
           descricao: string | null
           destino: string
           estilo_cartao: string
+          exibir_tela_busca: boolean
+          exigir_origem: boolean
           id: string
           ida_chegada: string
           ida_data: string
@@ -217,6 +219,7 @@ export type Database = {
           operador_id: string | null
           origem: string
           passageiros: Json
+          solicitar_origem: boolean
           status: string
           token: string
           valor: string
@@ -235,6 +238,8 @@ export type Database = {
           descricao?: string | null
           destino?: string
           estilo_cartao?: string
+          exibir_tela_busca?: boolean
+          exigir_origem?: boolean
           id?: string
           ida_chegada?: string
           ida_data?: string
@@ -245,6 +250,7 @@ export type Database = {
           operador_id?: string | null
           origem?: string
           passageiros?: Json
+          solicitar_origem?: boolean
           status?: string
           token?: string
           valor?: string
@@ -263,6 +269,8 @@ export type Database = {
           descricao?: string | null
           destino?: string
           estilo_cartao?: string
+          exibir_tela_busca?: boolean
+          exigir_origem?: boolean
           id?: string
           ida_chegada?: string
           ida_data?: string
@@ -273,6 +281,7 @@ export type Database = {
           operador_id?: string | null
           origem?: string
           passageiros?: Json
+          solicitar_origem?: boolean
           status?: string
           token?: string
           valor?: string

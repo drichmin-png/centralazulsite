@@ -66,9 +66,10 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
   const [linkDetalhes, setLinkDetalhes] = useState("");
 
   // Config link
-  const [exibirTelaBusca, setExibirTelaBusca] = useState(true);
+  const [exibirTelaBusca, setExibirTelaBusca] = useState(false);
   const [solicitarOrigem, setSolicitarOrigem] = useState(false);
   const [exigirOrigem, setExigirOrigem] = useState(false);
+
 
   // Upload & AI - main quotation
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
@@ -432,7 +433,11 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           metodo_pagamento: metodoPagamento,
           status: "pendente",
           operador_id: operadorId || null,
+          exibir_tela_busca: exibirTelaBusca,
+          solicitar_origem: solicitarOrigem,
+          exigir_origem: exigirOrigem,
         } as any)
+
         .select("token")
         .single();
 
