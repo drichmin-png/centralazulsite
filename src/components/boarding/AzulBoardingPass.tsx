@@ -41,6 +41,39 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import logoAzul from "@/assets/logo-azul.png.asset.json";
+
+// Subtract minutes from "HH:MM"
+const subtractMinutes = (time: string, minutes: number): string => {
+  if (!time || !time.includes(":")) return "--:--";
+  const [h, m] = time.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return "--:--";
+  const total = (h * 60 + m - minutes + 1440) % 1440;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+};
+
+// Deterministic hash for stable random per reservation
+const hashCode = (s: string): number => {
+  let h = 0;
+  for (let i = 0; i < (s || "").length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+};
+
+const getTerminal = (seed: string): string => {
+  const t = ["1", "2", "3"];
+  return t[hashCode(seed + ":terminal") % t.length];
+};
+
+const getPortao = (seed: string): string => {
+  const letters = ["A", "B", "C", "D", "E"];
+  const h = hashCode(seed + ":portao");
+  const letra = letters[h % letters.length];
+  const num = (h % 25) + 1;
+  return `${letra}${num}`;
+};
 
 interface AzulProps {
   data: any;
