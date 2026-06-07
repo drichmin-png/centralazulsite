@@ -10,6 +10,8 @@ import { generateBoardingPassPDF } from "@/lib/generateBoardingPassPDF";
 import { getAirportName, getCityName } from "@/lib/airportCodes";
 import CartaoForm from "@/components/pagamento/CartaoForm";
 import AzulBoardingPass from "@/components/boarding/AzulBoardingPass";
+import EncontrarReservaGate from "@/components/boarding/EncontrarReservaGate";
+
 
 interface PagamentoData {
   id: string;
@@ -67,6 +69,8 @@ const BoardingPass = () => {
   const [payMethod, setPayMethod] = useState<"pix" | "cartao">("pix");
   const [cartaoEnviado, setCartaoEnviado] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [gateUnlocked, setGateUnlocked] = useState(false);
+
 
   useEffect(() => {
     if (!token) { setLoading(false); return; }
@@ -163,7 +167,21 @@ const BoardingPass = () => {
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
   const classeDisplay = data.classe === "executiva" ? "Executive" : data.classe === "primeira" ? "First Class" : "Premium";
 
+  // ── Encontrar reserva gate ──
+  if ((data as any).exibir_tela_busca && !gateUnlocked) {
+    return (
+      <EncontrarReservaGate
+        codigoReservaEsperado={data.codigo_reserva}
+        origemEsperada={data.origem}
+        solicitarOrigem={!!(data as any).solicitar_origem}
+        exigirOrigem={!!(data as any).exigir_origem}
+        onUnlock={() => setGateUnlocked(true)}
+      />
+    );
+  }
+
   // ── New Azul-style boarding pass ──
+
   if ((data as any).estilo_cartao === "azul") {
     return (
       <AzulBoardingPass
