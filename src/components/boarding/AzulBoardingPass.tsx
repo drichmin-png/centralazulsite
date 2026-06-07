@@ -173,9 +173,13 @@ const AzulBoardingPass = ({
       >
         <div className="max-w-[480px] mx-auto flex items-center justify-between">
           <button className="p-1"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-semibold tracking-wide">Próxima viagem</h1>
+          <div className="flex items-center gap-2">
+            <img src={logoAzul.url} alt="Azul" className="h-5 w-auto bg-white rounded px-1 py-0.5" />
+            <h1 className="text-base font-semibold tracking-wide">Próxima viagem</h1>
+          </div>
           <div className="w-7" />
         </div>
+
       </header>
 
       <div className="max-w-[480px] mx-auto px-4 pt-4 space-y-4">
