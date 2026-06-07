@@ -411,12 +411,13 @@ const AzulBoardingPass = ({
                         </div>
 
                         <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px] text-gray-600">
-                          <div>Embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
-                          <div>Fim do embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
+                          <div>Embarque: <span className="text-gray-900 font-semibold">{subtractMinutes(tab === "ida" ? data.ida_partida : data.volta_partida, 30)}</span></div>
+                          <div>Fim do embarque: <span className="text-gray-900 font-semibold">{subtractMinutes(tab === "ida" ? data.ida_partida : data.volta_partida, 5)}</span></div>
                         </div>
                         <div className="text-[12px] text-gray-600">
-                          Terminal <span className="text-gray-900 font-semibold">--</span> · Portão <span className="text-gray-900 font-semibold">--</span>
+                          Terminal <span className="text-gray-900 font-semibold">{getTerminal(data.codigo_reserva + tab)}</span> · Portão <span className="text-gray-900 font-semibold">{getPortao(data.codigo_reserva + tab)}</span>
                         </div>
+
 
                         <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px]">
                           <div>
