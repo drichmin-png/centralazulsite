@@ -342,18 +342,67 @@ const AzulBoardingPass = ({
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="p-4 bg-gray-50 space-y-3 text-[13px] text-gray-700">
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-500">Companhia</span>
-                      <span className="font-semibold">{data.companhia || "—"}</span>
+                  <div className="p-4 bg-gray-50 space-y-4">
+                    {/* Início da viagem - sub card */}
+                    <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+                      <div className="bg-[#eaf2fb] text-center py-2 text-[13px] text-gray-700 font-medium border-b border-gray-200">
+                        Início da viagem
+                      </div>
+                      <div className="p-4 space-y-3 text-[13px]">
+                        <div className="text-[15px] font-semibold text-gray-900">
+                          Voo {data.numero_voo || "—"}
+                        </div>
+
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[15px] font-bold text-[#0066cc] leading-tight">
+                              {tab === "ida" ? origemNome : destinoNome}
+                            </div>
+                            <div className="text-[12px] text-gray-500 mt-1">
+                              Partida <span className="text-gray-900 font-semibold">{tab === "ida" ? data.ida_partida : data.volta_partida || "--:--"}</span>
+                            </div>
+                          </div>
+                          <div className="text-gray-400 pt-1">→</div>
+                          <div className="flex-1 min-w-0 text-right">
+                            <div className="text-[15px] font-bold text-[#0066cc] leading-tight">
+                              {tab === "ida" ? destinoNome : origemNome}
+                            </div>
+                            <div className="text-[12px] text-gray-500 mt-1">
+                              Chegada <span className="text-gray-900 font-semibold">{tab === "ida" ? data.ida_chegada : data.volta_chegada || "--:--"}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px] text-gray-600">
+                          <div>Embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
+                          <div>Fim do embarque: <span className="text-gray-900 font-semibold">--:--</span></div>
+                        </div>
+                        <div className="text-[12px] text-gray-600">
+                          Terminal <span className="text-gray-900 font-semibold">--</span> · Portão <span className="text-gray-900 font-semibold">--</span>
+                        </div>
+
+                        <div className="border-t border-dashed border-gray-200 pt-3 flex justify-between text-[12px]">
+                          <div>
+                            <div className="text-gray-500">Voo operado por</div>
+                            <div className="text-gray-900 font-semibold">{data.companhia || "—"}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-gray-500">Aeronave</div>
+                            <div className="text-gray-900 font-semibold">—</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-500">Classe</span>
-                      <span className="font-semibold capitalize">{data.classe}</span>
+
+                    {/* Tarifa / Classe */}
+                    <div className="flex items-center justify-between text-[13px] px-1">
+                      <div>Tarifa <span className="font-bold text-gray-900">{data.companhia || "—"}</span></div>
+                      <div>Classe Tarifária <span className="font-bold text-gray-900 capitalize">({(data.classe || "—").toString().charAt(0).toUpperCase()})</span></div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Reserva</span>
-                      <span className="font-semibold">{data.codigo_reserva}</span>
+
+                    <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-[13px]">
+                      <span className="text-gray-500">Código da reserva</span>
+                      <span className="font-bold text-gray-900 tracking-wider">{data.codigo_reserva || "—"}</span>
                     </div>
                   </div>
                 </motion.div>
