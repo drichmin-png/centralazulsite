@@ -519,6 +519,101 @@ const AzulBoardingPass = ({
           )}
         </div>
 
+        {/* ─── TudoAzul – Diamante Único ─── */}
+        <section className="mt-6 -mx-4 px-4 py-6 rounded-none bg-gradient-to-br from-[#001a4d] via-[#002868] to-[#001638] text-white relative overflow-hidden">
+          <div className="absolute right-2 top-6 opacity-10 pointer-events-none select-none text-[140px] leading-none">◆</div>
+          <h3 className="text-[11px] uppercase tracking-[0.2em] text-blue-200 mb-3 font-semibold">TudoAzul · Programa de Fidelidade</h3>
+          <div className="rounded-xl border border-white/15 bg-white/5 backdrop-blur-sm p-4 max-w-[92%]">
+            <div className="text-[15px] font-extrabold mb-3">Nível 5 | DIAMANTE ÚNICO</div>
+            <div className="space-y-3 text-[12.5px]">
+              <div>
+                <div className="font-bold">Economia Extra</div>
+                <div className="text-blue-100/90">Mais espaço e conforto em suas viagens internacionais.</div>
+              </div>
+              <div className="border-t border-white/10 pt-2">
+                <div className="font-bold">Lounge Azul em Viracopos</div>
+                <div className="text-blue-100/90">Tenha uma experiência especial enquanto espera pelo seu voo.</div>
+              </div>
+              <div className="border-t border-white/10 pt-2">
+                <div className="font-bold">Passagem cortesia para acompanhante</div>
+                <div className="text-blue-100/90">Aproveite 4 trechos* para voar Azul com quem você mais gosta.</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2 text-[14px] font-bold text-white/40">
+            <div>Nível 4 | DIAMANTE</div>
+            <div>Nível 3 | SAFIRA</div>
+            <div>Nível 2 | TOPÁZIO</div>
+            <div>Nível 1 | Azul Fidelidade</div>
+          </div>
+          <p className="text-[10px] text-blue-200/70 mt-3 text-right">*Consulte as condições</p>
+        </section>
+
+        {/* ─── Cartão Azul Itaú ─── */}
+        <section className="mt-0 -mx-4 px-4 py-6 bg-gradient-to-br from-slate-100 via-white to-blue-50">
+          <h3 className="text-[11px] uppercase tracking-[0.2em] text-[#002868] mb-3 font-semibold">Cartão Azul Itaú</h3>
+          <div className="rounded-xl border border-slate-200 bg-white/80 backdrop-blur p-4 shadow-sm">
+            <div className="text-[14px] font-extrabold text-[#001638] mb-3 leading-snug">
+              Azul Itaú Mastercard Skyline / Visa Infinite
+            </div>
+            <div className="space-y-3 text-[12.5px] text-gray-700">
+              <div>
+                <div className="font-bold text-[#001638]">Até 3,5 pontos</div>
+                <div>A cada dólar gasto.</div>
+              </div>
+              <div className="border-t border-slate-200 pt-2">
+                <div className="font-bold text-[#001638]">Ganhe 40 mil pontos de bônus</div>
+                <div>Mediante o gasto mensal de R$ 20 mil nos 3 primeiros meses.</div>
+              </div>
+              <div className="border-t border-slate-200 pt-2">
+                <div className="font-bold text-[#001638]">Torne-se Diamante</div>
+                <div>E garanta os benefícios do nível mais alto do programa.</div>
+              </div>
+            </div>
+            <div className="flex justify-end mt-3">
+              <div className="flex -space-x-3">
+                <div className="w-14 h-9 rounded-md bg-gradient-to-br from-slate-200 to-slate-400 border border-white shadow-sm" />
+                <div className="w-14 h-9 rounded-md bg-gradient-to-br from-blue-200 to-blue-500 border border-white shadow-sm" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2 text-[14px] font-bold text-slate-400">
+            <div>Azul Itaú Platina</div>
+            <div>Azul Itaú Gold</div>
+            <div>Azul Itaú Internacional</div>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-3 text-right">*Cartão sujeito à análise de crédito.</p>
+        </section>
+
+        {/* ─── Regras: Alteração / Cancelamento / Reembolso ─── */}
+        <section className="mt-0 -mx-4 bg-white">
+          <RegrasTarifaTabs />
+        </section>
+
+        {/* ─── Bloco "Ficou com alguma dúvida?" ─── */}
+        <section className="mt-4 -mx-4 px-4">
+          <div className="rounded-xl bg-[#0066cc] text-white p-4 flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <MessageCircle className="h-4 w-4 shrink-0" />
+                <div className="font-bold text-[13px]">Ficou com alguma dúvida? Fale com a gente!</div>
+              </div>
+              <p className="text-[11px] text-blue-100 leading-snug">
+                Estamos aqui para te ajudar. Entre em contato com seu atendente pelo WhatsApp.
+              </p>
+            </div>
+            {data.whatsapp_operador && (
+              <button
+                onClick={onWhatsApp}
+                className="bg-white text-[#0066cc] text-[12px] font-bold px-3 py-2 rounded-md shrink-0"
+              >
+                Entrar em contato
+              </button>
+            )}
+          </div>
+        </section>
+
+
         {/* ─── Rodapé estilo Azul (mobile-friendly) ─── */}
         <footer className="mt-8 -mx-4 bg-white border-t border-gray-200">
           <div className="px-4 py-6 space-y-6 text-[13px] text-gray-700">
