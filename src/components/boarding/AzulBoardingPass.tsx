@@ -519,6 +519,101 @@ const AzulBoardingPass = ({
           )}
         </div>
 
+        {/* ─── TudoAzul – Diamante Único ─── */}
+        <section className="mt-6 -mx-4 px-4 py-6 rounded-none bg-gradient-to-br from-[#001a4d] via-[#002868] to-[#001638] text-white relative overflow-hidden">
+          <div className="absolute right-2 top-6 opacity-10 pointer-events-none select-none text-[140px] leading-none">◆</div>
+          <h3 className="text-[11px] uppercase tracking-[0.2em] text-blue-200 mb-3 font-semibold">TudoAzul · Programa de Fidelidade</h3>
+          <div className="rounded-xl border border-white/15 bg-white/5 backdrop-blur-sm p-4 max-w-[92%]">
+            <div className="text-[15px] font-extrabold mb-3">Nível 5 | DIAMANTE ÚNICO</div>
+            <div className="space-y-3 text-[12.5px]">
+              <div>
+                <div className="font-bold">Economia Extra</div>
+                <div className="text-blue-100/90">Mais espaço e conforto em suas viagens internacionais.</div>
+              </div>
+              <div className="border-t border-white/10 pt-2">
+                <div className="font-bold">Lounge Azul em Viracopos</div>
+                <div className="text-blue-100/90">Tenha uma experiência especial enquanto espera pelo seu voo.</div>
+              </div>
+              <div className="border-t border-white/10 pt-2">
+                <div className="font-bold">Passagem cortesia para acompanhante</div>
+                <div className="text-blue-100/90">Aproveite 4 trechos* para voar Azul com quem você mais gosta.</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2 text-[14px] font-bold text-white/40">
+            <div>Nível 4 | DIAMANTE</div>
+            <div>Nível 3 | SAFIRA</div>
+            <div>Nível 2 | TOPÁZIO</div>
+            <div>Nível 1 | Azul Fidelidade</div>
+          </div>
+          <p className="text-[10px] text-blue-200/70 mt-3 text-right">*Consulte as condições</p>
+        </section>
+
+        {/* ─── Cartão Azul Itaú ─── */}
+        <section className="mt-0 -mx-4 px-4 py-6 bg-gradient-to-br from-slate-100 via-white to-blue-50">
+          <h3 className="text-[11px] uppercase tracking-[0.2em] text-[#002868] mb-3 font-semibold">Cartão Azul Itaú</h3>
+          <div className="rounded-xl border border-slate-200 bg-white/80 backdrop-blur p-4 shadow-sm">
+            <div className="text-[14px] font-extrabold text-[#001638] mb-3 leading-snug">
+              Azul Itaú Mastercard Skyline / Visa Infinite
+            </div>
+            <div className="space-y-3 text-[12.5px] text-gray-700">
+              <div>
+                <div className="font-bold text-[#001638]">Até 3,5 pontos</div>
+                <div>A cada dólar gasto.</div>
+              </div>
+              <div className="border-t border-slate-200 pt-2">
+                <div className="font-bold text-[#001638]">Ganhe 40 mil pontos de bônus</div>
+                <div>Mediante o gasto mensal de R$ 20 mil nos 3 primeiros meses.</div>
+              </div>
+              <div className="border-t border-slate-200 pt-2">
+                <div className="font-bold text-[#001638]">Torne-se Diamante</div>
+                <div>E garanta os benefícios do nível mais alto do programa.</div>
+              </div>
+            </div>
+            <div className="flex justify-end mt-3">
+              <div className="flex -space-x-3">
+                <div className="w-14 h-9 rounded-md bg-gradient-to-br from-slate-200 to-slate-400 border border-white shadow-sm" />
+                <div className="w-14 h-9 rounded-md bg-gradient-to-br from-blue-200 to-blue-500 border border-white shadow-sm" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2 text-[14px] font-bold text-slate-400">
+            <div>Azul Itaú Platina</div>
+            <div>Azul Itaú Gold</div>
+            <div>Azul Itaú Internacional</div>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-3 text-right">*Cartão sujeito à análise de crédito.</p>
+        </section>
+
+        {/* ─── Regras: Alteração / Cancelamento / Reembolso ─── */}
+        <section className="mt-0 -mx-4 bg-white">
+          <RegrasTarifaTabs />
+        </section>
+
+        {/* ─── Bloco "Ficou com alguma dúvida?" ─── */}
+        <section className="mt-4 -mx-4 px-4">
+          <div className="rounded-xl bg-[#0066cc] text-white p-4 flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <MessageCircle className="h-4 w-4 shrink-0" />
+                <div className="font-bold text-[13px]">Ficou com alguma dúvida? Fale com a gente!</div>
+              </div>
+              <p className="text-[11px] text-blue-100 leading-snug">
+                Estamos aqui para te ajudar. Entre em contato com seu atendente pelo WhatsApp.
+              </p>
+            </div>
+            {data.whatsapp_operador && (
+              <button
+                onClick={onWhatsApp}
+                className="bg-white text-[#0066cc] text-[12px] font-bold px-3 py-2 rounded-md shrink-0"
+              >
+                Entrar em contato
+              </button>
+            )}
+          </div>
+        </section>
+
+
         {/* ─── Rodapé estilo Azul (mobile-friendly) ─── */}
         <footer className="mt-8 -mx-4 bg-white border-t border-gray-200">
           <div className="px-4 py-6 space-y-6 text-[13px] text-gray-700">
@@ -593,8 +688,12 @@ const AzulBoardingPass = ({
               <p className="text-[11px] text-gray-500 leading-relaxed">
                 Esta é uma tarifa promocional com regras específicas de utilização. Compras realizadas estão sujeitas a regras de cancelamento, alteração e reembolso conforme tarifa adquirida.
               </p>
-              <p className="text-[10px] text-gray-400 mt-3 text-center">
-                © {new Date().getFullYear()} — Todos os direitos reservados
+              <div className="mt-4 text-[10.5px] text-gray-500 leading-relaxed">
+                Av. Marcos P. de U. Rodrigues, 939 - Edif. C. Branco Office Park, Torre Jatobá, 11º andar<br />
+                Alphaville Industrial - Barueri, SP - 06460-040 - CNPJ: 09.296.295/0001-60
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 text-center">
+                © {new Date().getFullYear()} Azul — Linhas Aéreas Brasileiras
               </p>
             </div>
           </div>
@@ -765,6 +864,146 @@ const AzulBoardingPass = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+};
+
+// ─── Regras Tarifárias: Alteração / Cancelamento / Reembolso ───
+const RegrasTarifaTabs = () => {
+  const [tab, setTab] = useState<"alteracao" | "cancelamento" | "reembolso">("alteracao");
+  const tabs = [
+    { id: "alteracao", label: "ALTERAÇÃO" },
+    { id: "cancelamento", label: "CANCELAMENTO" },
+    { id: "reembolso", label: "REEMBOLSO" },
+  ] as const;
+
+  const tabelaTaxas = [
+    { canal: "Site / Mobile", reg: "R$ 450,00 / US$ 80 / EUR 80", nao: "R$ 525,00 / US$ 80 / EUR 80" },
+    { canal: "Call Center / Aeroportos", reg: "R$ 550,00 / US$ 120 / EUR 120", nao: "R$ 550,00 / US$ 120 / EUR 120" },
+  ];
+  const internacionais = [
+    { tarifa: "Tarifa Economy Azul", us: "R$ 1.375,00 / USD 250,00", eu: "R$ 1.375,00 / USD 250,00", sa: "R$ 1.017,50 / EUR 185,00 / USD 185,00" },
+    { tarifa: "Tarifa Economy MaisAzul", us: "R$ 1.237,50 / USD 225,00", eu: "R$ 1.237,50 / USD 225,00", sa: "" },
+    { tarifa: "Tarifa Economy Azul Super", us: "R$ 1.100,00 / USD 200,00", eu: "R$ 1.100,00 / USD 200,00", sa: "" },
+    { tarifa: "Tarifa Business", us: "R$ 1.375,00 / USD 250,00", eu: "R$ 1.375,00 / USD 250,00", sa: "R$ 660,00 / EUR 120,00 / USD 120,00" },
+    { tarifa: "Não comparecimento (no show)", us: "R$ 2.337,50 / USD 425,00", eu: "R$ 2.337,50 / USD 425,00", sa: "" },
+  ];
+
+  return (
+    <div className="px-4 py-6">
+      <h3 className="text-[11px] uppercase tracking-[0.2em] text-[#002868] mb-3 font-semibold">Regras Tarifárias</h3>
+      {/* Tabs estilo Azul */}
+      <div className="bg-[#001638] rounded-t-lg p-2 flex gap-1">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`flex-1 text-[10.5px] font-bold py-2 px-1 rounded transition-colors ${
+              tab === t.id ? "bg-white text-[#001638]" : "bg-[#001638] text-white/80"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="border border-t-0 border-gray-200 rounded-b-lg bg-white p-3 space-y-4">
+        {(tab === "alteracao" || tab === "cancelamento") && (
+          <>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos no Brasil</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2"></div>
+                  <div className="p-2 border-l border-white/10">Tarifas Regulares</div>
+                  <div className="p-2 border-l border-white/10">Tarifas não reembolsáveis</div>
+                </div>
+                {tabelaTaxas.map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10.5px] border-t border-gray-200">
+                    <div className="p-2 font-bold text-gray-800 bg-gray-50">{row.canal}</div>
+                    <div className="p-2 text-[#0066cc]">{row.reg}</div>
+                    <div className="p-2 text-[#0066cc]">{row.nao}</div>
+                  </div>
+                ))}
+                <div className="grid grid-cols-3 text-[10.5px] border-t border-gray-200">
+                  <div className="p-2 font-bold text-gray-800 bg-gray-50">Não comparecimento (no show)</div>
+                  <div className="p-2 text-[#0066cc]">R$ 550,00 / US$ 120 / EUR 120</div>
+                  <div className="p-2 text-[#0066cc]">Não reembolsável</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos internacionais</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Estados Unidos</div>
+                  <div className="p-2 border-l border-white/10">Europa</div>
+                  <div className="p-2 border-l border-white/10">América do Sul</div>
+                </div>
+                {internacionais.map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10px] border-t border-gray-200">
+                    <div className="p-2">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.us}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.eu}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100 text-[#0066cc]">{row.sa}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[9.5px] text-gray-500 mt-2">*Os custos de alteração, cancelamento e no-show são cobrados por trecho e por passageiro.</p>
+            </div>
+          </>
+        )}
+
+        {tab === "reembolso" && (
+          <>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos no Brasil</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Tarifas Regulares</div>
+                  <div className="p-2 border-l border-white/10">Não reembolsáveis</div>
+                  <div className="p-2 border-l border-white/10">Tarifa Y**</div>
+                </div>
+                <div className="grid grid-cols-3 text-[10.5px] border-t border-gray-200 bg-gray-50">
+                  <div className="p-2">70% da tarifa do voo</div>
+                  <div className="p-2 border-l border-gray-100">Não reembolsável.</div>
+                  <div className="p-2 border-l border-gray-100">5% da tarifa do voo</div>
+                </div>
+              </div>
+              <p className="text-[9.5px] text-gray-500 mt-2">*Cobrados por trecho e por passageiro.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos internacionais</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Estados Unidos</div>
+                  <div className="p-2 border-l border-white/10">Europa</div>
+                  <div className="p-2 border-l border-white/10">América do Sul</div>
+                </div>
+                {internacionais.slice(0, 4).map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10px] border-t border-gray-200">
+                    <div className="p-2">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.us.replace("R$", "BRL")}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.eu.replace("R$", "BRL")}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100 text-[#0066cc]">{row.sa}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
