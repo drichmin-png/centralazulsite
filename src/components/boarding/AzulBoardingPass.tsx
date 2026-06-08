@@ -868,4 +868,144 @@ const AzulBoardingPass = ({
   );
 };
 
+// ─── Regras Tarifárias: Alteração / Cancelamento / Reembolso ───
+const RegrasTarifaTabs = () => {
+  const [tab, setTab] = useState<"alteracao" | "cancelamento" | "reembolso">("alteracao");
+  const tabs = [
+    { id: "alteracao", label: "ALTERAÇÃO" },
+    { id: "cancelamento", label: "CANCELAMENTO" },
+    { id: "reembolso", label: "REEMBOLSO" },
+  ] as const;
+
+  const tabelaTaxas = [
+    { canal: "Site / Mobile", reg: "R$ 450,00 / US$ 80 / EUR 80", nao: "R$ 525,00 / US$ 80 / EUR 80" },
+    { canal: "Call Center / Aeroportos", reg: "R$ 550,00 / US$ 120 / EUR 120", nao: "R$ 550,00 / US$ 120 / EUR 120" },
+  ];
+  const internacionais = [
+    { tarifa: "Tarifa Economy Azul", us: "R$ 1.375,00 / USD 250,00", eu: "R$ 1.375,00 / USD 250,00", sa: "R$ 1.017,50 / EUR 185,00 / USD 185,00" },
+    { tarifa: "Tarifa Economy MaisAzul", us: "R$ 1.237,50 / USD 225,00", eu: "R$ 1.237,50 / USD 225,00", sa: "" },
+    { tarifa: "Tarifa Economy Azul Super", us: "R$ 1.100,00 / USD 200,00", eu: "R$ 1.100,00 / USD 200,00", sa: "" },
+    { tarifa: "Tarifa Business", us: "R$ 1.375,00 / USD 250,00", eu: "R$ 1.375,00 / USD 250,00", sa: "R$ 660,00 / EUR 120,00 / USD 120,00" },
+    { tarifa: "Não comparecimento (no show)", us: "R$ 2.337,50 / USD 425,00", eu: "R$ 2.337,50 / USD 425,00", sa: "" },
+  ];
+
+  return (
+    <div className="px-4 py-6">
+      <h3 className="text-[11px] uppercase tracking-[0.2em] text-[#002868] mb-3 font-semibold">Regras Tarifárias</h3>
+      {/* Tabs estilo Azul */}
+      <div className="bg-[#001638] rounded-t-lg p-2 flex gap-1">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`flex-1 text-[10.5px] font-bold py-2 px-1 rounded transition-colors ${
+              tab === t.id ? "bg-white text-[#001638]" : "bg-[#001638] text-white/80"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="border border-t-0 border-gray-200 rounded-b-lg bg-white p-3 space-y-4">
+        {(tab === "alteracao" || tab === "cancelamento") && (
+          <>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos no Brasil</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2"></div>
+                  <div className="p-2 border-l border-white/10">Tarifas Regulares</div>
+                  <div className="p-2 border-l border-white/10">Tarifas não reembolsáveis</div>
+                </div>
+                {tabelaTaxas.map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10.5px] border-t border-gray-200">
+                    <div className="p-2 font-bold text-gray-800 bg-gray-50">{row.canal}</div>
+                    <div className="p-2 text-[#0066cc]">{row.reg}</div>
+                    <div className="p-2 text-[#0066cc]">{row.nao}</div>
+                  </div>
+                ))}
+                <div className="grid grid-cols-3 text-[10.5px] border-t border-gray-200">
+                  <div className="p-2 font-bold text-gray-800 bg-gray-50">Não comparecimento (no show)</div>
+                  <div className="p-2 text-[#0066cc]">R$ 550,00 / US$ 120 / EUR 120</div>
+                  <div className="p-2 text-[#0066cc]">Não reembolsável</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos internacionais</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Estados Unidos</div>
+                  <div className="p-2 border-l border-white/10">Europa</div>
+                  <div className="p-2 border-l border-white/10">América do Sul</div>
+                </div>
+                {internacionais.map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10px] border-t border-gray-200">
+                    <div className="p-2">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.us}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.eu}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100 text-[#0066cc]">{row.sa}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[9.5px] text-gray-500 mt-2">*Os custos de alteração, cancelamento e no-show são cobrados por trecho e por passageiro.</p>
+            </div>
+          </>
+        )}
+
+        {tab === "reembolso" && (
+          <>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos no Brasil</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Tarifas Regulares</div>
+                  <div className="p-2 border-l border-white/10">Não reembolsáveis</div>
+                  <div className="p-2 border-l border-white/10">Tarifa Y**</div>
+                </div>
+                <div className="grid grid-cols-3 text-[10.5px] border-t border-gray-200 bg-gray-50">
+                  <div className="p-2">70% da tarifa do voo</div>
+                  <div className="p-2 border-l border-gray-100">Não reembolsável.</div>
+                  <div className="p-2 border-l border-gray-100">5% da tarifa do voo</div>
+                </div>
+              </div>
+              <p className="text-[9.5px] text-gray-500 mt-2">*Cobrados por trecho e por passageiro.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-[#001638] text-[13px] mb-2">Voos internacionais</h4>
+              <div className="rounded overflow-hidden border border-gray-200">
+                <div className="bg-[#001638] text-white text-[10px] font-bold grid grid-cols-3">
+                  <div className="p-2">Estados Unidos</div>
+                  <div className="p-2 border-l border-white/10">Europa</div>
+                  <div className="p-2 border-l border-white/10">América do Sul</div>
+                </div>
+                {internacionais.slice(0, 4).map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[10px] border-t border-gray-200">
+                    <div className="p-2">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.us.replace("R$", "BRL")}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100">
+                      <div className="font-bold text-gray-800">{row.tarifa}</div>
+                      <div className="text-[#0066cc]">{row.eu.replace("R$", "BRL")}</div>
+                    </div>
+                    <div className="p-2 border-l border-gray-100 text-[#0066cc]">{row.sa}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default AzulBoardingPass;
