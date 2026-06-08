@@ -165,13 +165,13 @@ const AzulBoardingPass = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] pb-28">
+    <div className="min-h-screen bg-[#f5f7fb] pb-8">
       {/* Header */}
       <header
         className="sticky top-0 z-30 px-4 pt-5 pb-4 text-white"
         style={{ background: "linear-gradient(180deg, #002a6e 0%, #00194a 100%)" }}
       >
-        <div className="max-w-[480px] mx-auto flex items-center justify-between">
+        <div className="max-w-[640px] mx-auto flex items-center justify-between">
           <button className="p-1"><ArrowLeft className="h-5 w-5" /></button>
           <div className="flex items-center gap-2">
             <img src={logoAzul.url} alt="Azul" className="h-5 w-auto bg-white rounded px-1 py-0.5" />
@@ -182,7 +182,7 @@ const AzulBoardingPass = ({
 
       </header>
 
-      <div className="max-w-[480px] mx-auto px-4 pt-4 space-y-4">
+      <div className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
         <AnimatePresence>
           {isPendente && (
             <motion.div
