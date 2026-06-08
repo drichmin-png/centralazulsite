@@ -601,31 +601,6 @@ const AzulBoardingPass = ({
         </footer>
       </div>
 
-      {/* ─── Bottom nav (smaller, clickable) ─── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
-        <div className="max-w-[480px] mx-auto grid grid-cols-4">
-          {[
-            { key: "bagagem", icon: Luggage, label: "Bagagens" },
-            { key: "assentos", icon: Armchair, label: "Assentos" },
-            { key: "confirmacao", icon: Mail, label: "Confirmação" },
-            { key: "servicos", icon: MessageCircle, label: "Mais serviços" },
-          ].map((b) => {
-            const Icon = b.icon;
-            return (
-              <motion.button
-                key={b.key}
-                whileTap={{ scale: 0.92 }}
-                onClick={() => setModal(b.key as any)}
-                className="flex flex-col items-center gap-0.5 py-2 text-[#0066cc] text-[10px] font-semibold hover:bg-blue-50 transition-colors"
-              >
-                <Icon className="h-4 w-4" />
-                {b.label}
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* ─── Modais ─── */}
       <Dialog open={modal === "bagagem"} onOpenChange={(o) => !o && setModal(null)}>
         <DialogContent className="max-w-md">
