@@ -688,8 +688,12 @@ const AzulBoardingPass = ({
               <p className="text-[11px] text-gray-500 leading-relaxed">
                 Esta é uma tarifa promocional com regras específicas de utilização. Compras realizadas estão sujeitas a regras de cancelamento, alteração e reembolso conforme tarifa adquirida.
               </p>
-              <p className="text-[10px] text-gray-400 mt-3 text-center">
-                © {new Date().getFullYear()} — Todos os direitos reservados
+              <div className="mt-4 text-[10.5px] text-gray-500 leading-relaxed">
+                Av. Marcos P. de U. Rodrigues, 939 - Edif. C. Branco Office Park, Torre Jatobá, 11º andar<br />
+                Alphaville Industrial - Barueri, SP - 06460-040 - CNPJ: 09.296.295/0001-60
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 text-center">
+                © {new Date().getFullYear()} Azul — Linhas Aéreas Brasileiras
               </p>
             </div>
           </div>
