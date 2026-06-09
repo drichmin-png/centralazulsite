@@ -206,14 +206,28 @@ const AzulBoardingPass = ({
               className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
             >
               <div className="flex items-start gap-2">
+        <AnimatePresence>
+          {isPendente && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
+            >
+              <div className="flex items-start gap-2">
                 <AlertCircle className="h-5 w-5 text-[#a87613] shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-[15px] font-medium text-[#1a3a6c] leading-snug">
-                    Identificamos uma pendência no pagamento da sua viagem
+                <div className="flex-1">
+                  <div className="text-[15px] text-gray-800 leading-snug">
+                    Viagem garantida <span className="font-bold">por {countdownStr}</span>
                   </div>
                   <p className="text-[13px] text-gray-600 mt-2 leading-relaxed">
-                    Não se preocupe, você ainda pode concluir essa compra. Entre em contato com seu agente de viagens e garanta sua reserva.
+                    Sua viagem está quase confirmada, basta finalizar o pagamento via PIX dentro do prazo. Não se preocupe, vamos reconhecer o pagamento automaticamente.
                   </p>
+                  <button
+                    onClick={onCopyPix}
+                    className="mt-3 w-full h-12 rounded-md bg-[#0066cc] hover:bg-[#0057b3] text-white text-[15px] font-semibold shadow-sm transition-colors"
+                  >
+                    {pixCopiado ? "Código PIX copiado!" : "Pagar via PIX"}
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -231,6 +245,16 @@ const AzulBoardingPass = ({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Hero image - destination */}
+        <div className="rounded-lg overflow-hidden -mx-4 sm:mx-0">
+          <img
+            src={CIDADE_IMAGES[hashCode((data.codigo_reserva || "") + ":hero") % CIDADE_IMAGES.length]}
+            alt={destinoNome}
+            className="w-full h-48 object-cover"
+            loading="lazy"
+          />
+        </div>
 
         {/* Sua viagem para */}
         <div className="border-b border-dashed border-gray-300 pb-5">
