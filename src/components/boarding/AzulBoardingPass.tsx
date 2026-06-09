@@ -40,8 +40,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logoAzul from "@/assets/logo-azul.png.asset.json";
+import cidade1 from "@/assets/cidades/cidade1.jpg.asset.json";
+import cidade2 from "@/assets/cidades/cidade2.jpg.asset.json";
+import cidade3 from "@/assets/cidades/cidade3.jpg.asset.json";
+import cidade4 from "@/assets/cidades/cidade4.jpg.asset.json";
+import cidade5 from "@/assets/cidades/cidade5.avif.asset.json";
+
+const CIDADE_IMAGES = [cidade1.url, cidade2.url, cidade3.url, cidade4.url, cidade5.url];
 
 // Subtract minutes from "HH:MM"
 const subtractMinutes = (time: string, minutes: number): string => {
