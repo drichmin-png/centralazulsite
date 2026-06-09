@@ -206,14 +206,6 @@ const AzulBoardingPass = ({
               className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
             >
               <div className="flex items-start gap-2">
-        <AnimatePresence>
-          {isPendente && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
-            >
-              <div className="flex items-start gap-2">
                 <AlertCircle className="h-5 w-5 text-[#a87613] shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="text-[15px] text-gray-800 leading-snug">
