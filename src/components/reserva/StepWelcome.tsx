@@ -1,6 +1,8 @@
-import { Plane, ShieldCheck, Clock, Sparkles } from "lucide-react";
+import { ShieldCheck, Zap, Headphones, ChevronRight, Lock, Star, Award, Users, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import logoAzul from "@/assets/logo-azul.png.asset.json";
+import windowImg from "@/assets/reserva-window.jpg";
 
 interface StepWelcomeProps {
   onNext: () => void;
@@ -11,75 +13,153 @@ const StepWelcome = ({ onNext }: StepWelcomeProps) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center"
+      className="w-full"
     >
-      {/* Decorative background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-[15%] left-[50%] -translate-x-1/2 w-80 h-80 rounded-full blur-[100px] opacity-20"
-          style={{ background: "hsl(var(--primary))" }}
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 5, repeat: Infinity }}
-        />
+      {/* Top bar with logo + secure badge */}
+      <div className="flex items-center justify-between mb-6">
+        <img src={logoAzul.url} alt="Azul" className="h-8 sm:h-10 w-auto" />
+        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm">
+          <ShieldCheck className="h-4 w-4 text-blue-600" />
+          <div className="leading-tight">
+            <p className="text-[10px] font-semibold text-slate-700">Ambiente</p>
+            <p className="text-[10px] font-bold text-slate-900">100% seguro</p>
+          </div>
+        </div>
       </div>
 
-      <motion.div
-        className="relative mb-10"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-      >
-        <div className="w-28 h-28 rounded-3xl bg-primary flex items-center justify-center shadow-xl shadow-primary/25">
-          <Plane className="h-14 w-14 text-primary-foreground" />
-        </div>
-        <motion.div
-          className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.4, type: "spring" }}
-        >
-          <Sparkles className="h-5 w-5 text-accent-foreground" />
-        </motion.div>
-      </motion.div>
+      {/* Hero */}
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-center mb-8">
+        <div className="sm:col-span-3">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center gap-2 rounded-full bg-white border border-slate-200 px-3 py-1.5 shadow-sm mb-4"
+          >
+            <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center">
+              <ShieldCheck className="h-3 w-3 text-white" />
+            </div>
+            <span className="text-[11px] font-semibold text-slate-700">Reserva rápida e segura</span>
+          </motion.div>
 
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.05]"
+          >
+            Sua viagem<br />
+            <span className="text-blue-600">começa</span> aqui
+          </motion.h1>
+          <div className="h-1 w-10 bg-blue-600 rounded-full mt-3 mb-4" />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-md"
+          >
+            Preencha seus dados de forma rápida e segura e garanta sua viagem com a <span className="font-bold text-slate-900">Azul</span>.
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, type: "spring" }}
+          className="sm:col-span-2 relative"
+        >
+          <div className="relative rounded-[2rem] overflow-hidden shadow-xl shadow-blue-900/10 border border-slate-200">
+            <img src={windowImg} alt="Vista da janela do avião" className="w-full h-56 sm:h-72 object-cover" width={1024} height={1024} />
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="absolute -bottom-3 -left-3 sm:-left-6 bg-slate-900 text-white rounded-2xl px-3 py-2 shadow-lg flex items-center gap-2 max-w-[180px]"
+          >
+            <Users className="h-4 w-4 text-blue-400 shrink-0" />
+            <div className="leading-tight">
+              <p className="text-[10px] font-semibold">Mais de 10 milhões</p>
+              <p className="text-[10px] text-slate-300">de clientes voando com a Azul</p>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Feature cards */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-3xl bg-white border border-slate-200 p-4 sm:p-5 mb-6 shadow-sm"
       >
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3 leading-tight">
-          Sua Reserva<br />
-          <span className="text-primary">Começa Aqui</span>
-        </h1>
-        <p className="text-muted-foreground mb-10 max-w-sm leading-relaxed text-sm sm:text-base">
-          Preencha seus dados de forma rápida e segura para garantir sua viagem.
-        </p>
+        {[
+          { Icon: ShieldCheck, title: "Seus dados protegidos", desc: "Informações criptografadas e 100% seguras." },
+          { Icon: Zap, title: "Reserva em menos de 3 min", desc: "Processo rápido, simples e sem complicações." },
+          { Icon: Headphones, title: "Atendimento especializado", desc: "Suporte humanizado antes, durante e depois." },
+        ].map(({ Icon, title, desc }) => (
+          <div key={title} className="flex sm:flex-col gap-3 sm:gap-2 sm:text-center items-start sm:items-center">
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+              <Icon className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900 leading-tight">{title}</p>
+              <p className="text-xs text-slate-500 mt-1 leading-snug">{desc}</p>
+            </div>
+          </div>
+        ))}
       </motion.div>
 
+      {/* CTA */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="w-full max-w-xs"
+        transition={{ delay: 0.35 }}
       >
-        <Button onClick={onNext} size="lg" className="w-full h-14 text-base font-bold shadow-lg shadow-primary/20 rounded-2xl">
-          Começar Reserva
+        <Button
+          onClick={onNext}
+          className="w-full h-16 rounded-2xl text-base font-bold shadow-xl shadow-blue-600/25 bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-between px-6"
+        >
+          <span className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Plane className="h-5 w-5" />
+          </span>
+          <span>Começar Reserva</span>
+          <ChevronRight className="h-5 w-5" />
         </Button>
+
+        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-slate-500">
+          <Lock className="h-3.5 w-3.5" />
+          <span>Sem taxas ocultas. Transparência do início ao fim.</span>
+        </div>
       </motion.div>
 
+      {/* Trust row */}
       <motion.div
-        className="flex items-center justify-center gap-8 mt-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.45 }}
+        className="grid grid-cols-3 gap-3 mt-6 rounded-3xl bg-white border border-slate-200 p-4 shadow-sm"
       >
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="h-4 w-4 text-success" />
-          <span className="font-medium">Seguro</span>
+        <div className="flex items-center gap-2">
+          <Users className="h-5 w-5 text-blue-600" />
+          <div className="leading-tight">
+            <p className="text-sm font-bold text-slate-900">10M+</p>
+            <p className="text-[10px] text-slate-500">Clientes satisfeitos</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="h-4 w-4 text-primary" />
-          <span className="font-medium">~3 min</span>
+        <div className="text-center">
+          <div className="flex justify-center gap-0.5 text-blue-600">
+            {[0, 1, 2, 3, 4].map((i) => <Star key={i} className="h-3.5 w-3.5 fill-current" />)}
+          </div>
+          <p className="text-[11px] font-bold text-slate-900 mt-1">Avaliação excelente</p>
+          <p className="text-[10px] text-slate-500">4,8/5 no Reclame Aqui</p>
+        </div>
+        <div className="flex items-center gap-2 justify-end">
+          <Award className="h-5 w-5 text-blue-600" />
+          <div className="leading-tight text-right">
+            <p className="text-[11px] font-bold text-slate-900">Empresa brasileira</p>
+            <p className="text-[10px] text-slate-500">Compromisso com você</p>
+          </div>
         </div>
       </motion.div>
     </motion.div>
