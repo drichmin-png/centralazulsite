@@ -103,7 +103,7 @@ const formatDateLong = (d: string): string => {
   if (!d) return "—";
   const [dd, mm, yyyy] = d.split("/").map((x) => x.trim());
   if (!yyyy) return d;
-  const date = new Date(`${yyyy}-${mm}-${dd}`);
+  const date = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
   if (isNaN(date.getTime())) return d;
   const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
   return `${dias[date.getDay()]}, ${dd}/${mm}/${yyyy}`;
@@ -131,13 +131,6 @@ const AzulBoardingPass = ({
   const [tab, setTab] = useState<"ida" | "volta">("ida");
   const [viajantesOpen, setViajantesOpen] = useState(true);
   const [detalhesVoo, setDetalhesVoo] = useState(true);
-  // Countdown 10 minutes for pending reservations
-  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
-  useEffect(() => {
-    const t = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const countdownStr = `${Math.floor(secondsLeft / 60)}m ${String(secondsLeft % 60).padStart(2, "0")}s`;
   const [modal, setModal] = useState<null | "bagagem" | "assentos" | "confirmacao" | "servicos" | "alterar" | "cancelar">(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -200,19 +193,16 @@ const AzulBoardingPass = ({
       <div className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
         <AnimatePresence>
           {isPendente && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
-            >
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-[#a87613] shrink-0 mt-0.5" />
+            <div className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4">
+
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-6 w-6 text-[#a87613] shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="text-[15px] text-gray-800 leading-snug">
-                    Viagem garantida <span className="font-bold">por {countdownStr}</span>
+                  <div className="text-[16px] font-bold text-[#00194a] leading-snug">
+                    Identificamos uma pendência no pagamento da sua viagem
                   </div>
-                  <p className="text-[13px] text-gray-600 mt-2 leading-relaxed">
-                    Sua viagem está quase confirmada, basta finalizar o pagamento via PIX dentro do prazo. Não se preocupe, vamos reconhecer o pagamento automaticamente.
+                  <p className="text-[14px] text-gray-600 mt-2 leading-relaxed">
+                    Não se preocupe, você ainda pode concluir essa compra. Finalize o pagamento via PIX para garantir sua reserva.
                   </p>
                   <button
                     onClick={onCopyPix}
@@ -222,7 +212,7 @@ const AzulBoardingPass = ({
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
           {isPago && (
             <motion.div
@@ -320,30 +310,37 @@ const AzulBoardingPass = ({
           </div>
         </div>
 
-        {/* ─── Quick actions (inline, between Viajantes and Voos) ─── */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="grid grid-cols-4">
-            {[
-              { key: "bagagem", icon: Luggage, label: "Bagagens" },
-              { key: "assentos", icon: Armchair, label: "Assentos" },
-              { key: "confirmacao", icon: Mail, label: "Confirmação" },
-              { key: "servicos", icon: MessageCircle, label: "Mais serviços" },
-            ].map((b) => {
-              const Icon = b.icon;
-              return (
-                <motion.button
-                  key={b.key}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => setModal(b.key as any)}
-                  className="flex flex-col items-center gap-1 py-3 text-[#0066cc] text-[11px] font-semibold hover:bg-blue-50 transition-colors"
-                >
-                  <Icon className="h-5 w-5" />
-                  {b.label}
-                </motion.button>
-              );
-            })}
-          </div>
+        {/* ─── Quick actions (large tiles, matches Azul app) ─── */}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { key: "bagagem", icon: Luggage, label: "Bagagens", highlight: false },
+            { key: "assentos", icon: Armchair, label: "Assentos", highlight: false },
+            { key: "confirmacao", icon: Mail, label: "Enviar\nconfirmação", highlight: false },
+            { key: "servicos", icon: null as any, label: "Mais\nserviços", highlight: true, dots: true },
+          ].map((b) => {
+            const Icon = b.icon;
+            return (
+              <motion.button
+                key={b.key}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setModal(b.key as any)}
+                className={`aspect-square rounded-md flex flex-col items-center justify-center gap-2 text-white text-[13px] font-normal leading-tight text-center px-1 transition-colors ${
+                  b.highlight
+                    ? "bg-[#0f4c9c] hover:bg-[#0a3d80]"
+                    : "bg-[#9a9a9a] hover:bg-[#858585]"
+                }`}
+              >
+                {b.dots ? (
+                  <span className="text-2xl leading-none tracking-widest">•••</span>
+                ) : Icon ? (
+                  <Icon className="h-7 w-7" strokeWidth={1.5} />
+                ) : null}
+                <span className="whitespace-pre-line">{b.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
+
 
         {/* Voos */}
         <div className="pt-2">
