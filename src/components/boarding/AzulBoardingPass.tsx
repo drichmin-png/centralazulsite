@@ -131,13 +131,6 @@ const AzulBoardingPass = ({
   const [tab, setTab] = useState<"ida" | "volta">("ida");
   const [viajantesOpen, setViajantesOpen] = useState(true);
   const [detalhesVoo, setDetalhesVoo] = useState(true);
-  // Countdown 10 minutes for pending reservations
-  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
-  useEffect(() => {
-    const t = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const countdownStr = `${Math.floor(secondsLeft / 60)}m ${String(secondsLeft % 60).padStart(2, "0")}s`;
   const [modal, setModal] = useState<null | "bagagem" | "assentos" | "confirmacao" | "servicos" | "alterar" | "cancelar">(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
