@@ -196,16 +196,15 @@ const AzulBoardingPass = ({
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
-            >
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-[#a87613] shrink-0 mt-0.5" />
+          <div className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-6 w-6 text-[#a87613] shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="text-[15px] text-gray-800 leading-snug">
-                    Viagem garantida <span className="font-bold">por {countdownStr}</span>
+                  <div className="text-[16px] font-bold text-[#00194a] leading-snug">
+                    Identificamos uma pendência no pagamento da sua viagem
                   </div>
-                  <p className="text-[13px] text-gray-600 mt-2 leading-relaxed">
-                    Sua viagem está quase confirmada, basta finalizar o pagamento via PIX dentro do prazo. Não se preocupe, vamos reconhecer o pagamento automaticamente.
+                  <p className="text-[14px] text-gray-600 mt-2 leading-relaxed">
+                    Não se preocupe, você ainda pode concluir essa compra. Finalize o pagamento via PIX para garantir sua reserva.
                   </p>
                   <button
                     onClick={onCopyPix}
@@ -215,7 +214,7 @@ const AzulBoardingPass = ({
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
           {isPago && (
             <motion.div
