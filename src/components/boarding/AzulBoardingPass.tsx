@@ -103,7 +103,7 @@ const formatDateLong = (d: string): string => {
   if (!d) return "—";
   const [dd, mm, yyyy] = d.split("/").map((x) => x.trim());
   if (!yyyy) return d;
-  const date = new Date(`${yyyy}-${mm}-${dd}`);
+  const date = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
   if (isNaN(date.getTime())) return d;
   const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
   return `${dias[date.getDay()]}, ${dd}/${mm}/${yyyy}`;
