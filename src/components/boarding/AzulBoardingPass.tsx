@@ -310,30 +310,37 @@ const AzulBoardingPass = ({
           </div>
         </div>
 
-        {/* ─── Quick actions (inline, between Viajantes and Voos) ─── */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="grid grid-cols-4">
-            {[
-              { key: "bagagem", icon: Luggage, label: "Bagagens" },
-              { key: "assentos", icon: Armchair, label: "Assentos" },
-              { key: "confirmacao", icon: Mail, label: "Confirmação" },
-              { key: "servicos", icon: MessageCircle, label: "Mais serviços" },
-            ].map((b) => {
-              const Icon = b.icon;
-              return (
-                <motion.button
-                  key={b.key}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => setModal(b.key as any)}
-                  className="flex flex-col items-center gap-1 py-3 text-[#0066cc] text-[11px] font-semibold hover:bg-blue-50 transition-colors"
-                >
-                  <Icon className="h-5 w-5" />
-                  {b.label}
-                </motion.button>
-              );
-            })}
-          </div>
+        {/* ─── Quick actions (large tiles, matches Azul app) ─── */}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { key: "bagagem", icon: Luggage, label: "Bagagens", highlight: false },
+            { key: "assentos", icon: Armchair, label: "Assentos", highlight: false },
+            { key: "confirmacao", icon: Mail, label: "Enviar\nconfirmação", highlight: false },
+            { key: "servicos", icon: null as any, label: "Mais\nserviços", highlight: true, dots: true },
+          ].map((b) => {
+            const Icon = b.icon;
+            return (
+              <motion.button
+                key={b.key}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setModal(b.key as any)}
+                className={`aspect-square rounded-md flex flex-col items-center justify-center gap-2 text-white text-[13px] font-normal leading-tight text-center px-1 transition-colors ${
+                  b.highlight
+                    ? "bg-[#0f4c9c] hover:bg-[#0a3d80]"
+                    : "bg-[#9a9a9a] hover:bg-[#858585]"
+                }`}
+              >
+                {b.dots ? (
+                  <span className="text-2xl leading-none tracking-widest">•••</span>
+                ) : Icon ? (
+                  <Icon className="h-7 w-7" strokeWidth={1.5} />
+                ) : null}
+                <span className="whitespace-pre-line">{b.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
+
 
         {/* Voos */}
         <div className="pt-2">
