@@ -51,6 +51,11 @@ const CIDADE_IMAGES = [
   "/cidades/cidade5.avif",
 ];
 
+const randomImage = (exclude?: string): string => {
+  const pool = exclude ? CIDADE_IMAGES.filter((i) => i !== exclude) : CIDADE_IMAGES;
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+
 // Subtract minutes from "HH:MM"
 const subtractMinutes = (time: string, minutes: number): string => {
   if (!time || !time.includes(":")) return "--:--";
