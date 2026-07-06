@@ -236,13 +236,20 @@ const AzulBoardingPass = ({
         </AnimatePresence>
 
         {/* Hero image - destination */}
-        <div className="rounded-none overflow-hidden -mx-4 sm:mx-0">
-          <img
-            src={CIDADE_IMAGES[hashCode((data.codigo_reserva || "") + ":hero") % CIDADE_IMAGES.length]}
-            alt={destinoNome}
-            className="w-full h-48 object-cover"
-            loading="lazy"
-          />
+        <div className="rounded-none overflow-hidden -mx-4 sm:mx-0 relative h-48">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={heroImage}
+              src={heroImage}
+              alt={destinoNome}
+              className="w-full h-48 object-cover absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7 }}
+              loading="lazy"
+            />
+          </AnimatePresence>
         </div>
 
         {/* Sua viagem para */}
