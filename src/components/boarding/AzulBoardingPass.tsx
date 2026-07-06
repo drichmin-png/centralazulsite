@@ -525,12 +525,12 @@ const AzulBoardingPass = ({
             variant="outline"
             onClick={onDownloadPDF}
             disabled={generatingPdf}
-            className="w-full h-12 rounded-lg border-gray-300 text-gray-700 font-semibold"
+            className="w-full h-12 rounded-none border-gray-300 text-gray-700 font-semibold"
           >
             {generatingPdf ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</> : <><Download className="h-4 w-4 mr-2" /> Baixar bilhete em PDF</>}
           </Button>
           {data.whatsapp_operador && (
-            <Button onClick={onWhatsApp} className="w-full h-12 rounded-lg bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold">
+            <Button onClick={onWhatsApp} className="w-full h-12 rounded-none bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold">
               <MessageCircle className="h-4 w-4 mr-2" /> Falar no WhatsApp
             </Button>
           )}
