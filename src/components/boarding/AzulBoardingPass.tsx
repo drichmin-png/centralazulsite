@@ -51,6 +51,11 @@ const CIDADE_IMAGES = [
   "/cidades/cidade5.avif",
 ];
 
+const randomImage = (exclude?: string): string => {
+  const pool = exclude ? CIDADE_IMAGES.filter((i) => i !== exclude) : CIDADE_IMAGES;
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+
 // Subtract minutes from "HH:MM"
 const subtractMinutes = (time: string, minutes: number): string => {
   if (!time || !time.includes(":")) return "--:--";
@@ -134,6 +139,7 @@ const AzulBoardingPass = ({
   const [modal, setModal] = useState<null | "bagagem" | "assentos" | "confirmacao" | "servicos" | "alterar" | "cancelar">(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [heroImage, setHeroImage] = useState(() => randomImage());
 
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
   const isPago = data.status === "pago" || data.status === "taxa_paga";
@@ -171,6 +177,13 @@ const AzulBoardingPass = ({
     }
     onWhatsApp();
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroImage((prev) => randomImage(prev));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] pb-8">
@@ -223,13 +236,20 @@ const AzulBoardingPass = ({
         </AnimatePresence>
 
         {/* Hero image - destination */}
-        <div className="rounded-none overflow-hidden -mx-4 sm:mx-0">
-          <img
-            src={CIDADE_IMAGES[hashCode((data.codigo_reserva || "") + ":hero") % CIDADE_IMAGES.length]}
-            alt={destinoNome}
-            className="w-full h-48 object-cover"
-            loading="lazy"
-          />
+        <div className="rounded-none overflow-hidden -mx-4 sm:mx-0 relative h-48">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={heroImage}
+              src={heroImage}
+              alt={destinoNome}
+              className="w-full h-48 object-cover absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7 }}
+              loading="lazy"
+            />
+          </AnimatePresence>
         </div>
 
         {/* Sua viagem para */}
