@@ -204,12 +204,6 @@ const AzulBoardingPass = ({
                   <p className="text-[14px] text-gray-600 mt-2 leading-relaxed">
                     Não se preocupe, você ainda pode concluir essa compra. Finalize o pagamento via PIX para garantir sua reserva.
                   </p>
-                  <button
-                    onClick={onCopyPix}
-                    className="mt-3 w-full h-12 rounded-md bg-[#0066cc] hover:bg-[#0057b3] text-white text-[15px] font-semibold shadow-sm transition-colors"
-                  >
-                    {pixCopiado ? "Código PIX copiado!" : "Pagar via PIX"}
-                  </button>
                 </div>
               </div>
             </div>
