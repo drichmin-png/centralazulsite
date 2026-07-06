@@ -42,7 +42,7 @@ import {
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAzul from "@/assets/logo-azul.png.asset.json";
+const logoAzul = { url: "/logo-azul.png" };
 const CIDADE_IMAGES = [
   "/cidades/cidade1.jpg",
   "/cidades/cidade2.jpg",

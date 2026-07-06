@@ -1,7 +1,7 @@
 import { ShieldCheck, Zap, Headphones, ChevronRight, Lock, Star, Award, Users, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import logoAzul from "@/assets/logo-azul.png.asset.json";
+const logoAzul = { url: "/logo-azul.png" };
 import windowImg from "@/assets/reserva-window.jpg";
 
 interface StepWelcomeProps {
