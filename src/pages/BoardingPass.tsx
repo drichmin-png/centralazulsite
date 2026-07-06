@@ -704,25 +704,25 @@ const BoardingPass = () => {
                     }
                     if (!taxaCodigo && data.codigo_pix) taxaCodigo = data.codigo_pix;
                     return (
-                      <button
+                      <motion.button
                         onClick={() => { setShowPayment(true); setDetalhesAbertos(false); }}
-                        className="w-full rounded-2xl bg-amber-50 border border-amber-200 py-4 px-4 flex flex-col items-center justify-center gap-1.5 hover:bg-amber-100 transition-colors active:scale-[0.98] mb-4"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{ y: -2, boxShadow: "0 12px 24px -8px rgba(245, 158, 11, 0.45)" }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="w-full rounded-none bg-amber-50 border-2 border-amber-300 py-4 px-4 flex flex-col items-center justify-center gap-1.5 mb-4 shadow-[0_2px_0_0_rgba(245,158,11,0.35)]"
                       >
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-amber-500" />
-                          <span className="text-sm font-bold text-amber-700">
-                            {isTaxa ? "Taxa pendente" : "Reserva aguardando pagamento"}
+                          <span className="text-sm font-bold text-amber-700 uppercase tracking-wide">
+                            {isTaxa ? "Taxa pendente" : "Realizar pagamento"}
                           </span>
                         </div>
                         {isTaxa && taxaValorTxt && (
                           <span className="text-base font-extrabold text-amber-800">R$ {taxaValorTxt}</span>
                         )}
-                        {isTaxa && taxaCodigo && (
-                          <span className="text-[10px] font-mono text-amber-700/80 break-all px-2 leading-tight">
-                            {taxaCodigo.length > 60 ? taxaCodigo.slice(0, 60) + "…" : taxaCodigo}
-                          </span>
-                        )}
-                      </button>
+                      </motion.button>
                     );
                   })()}
 
