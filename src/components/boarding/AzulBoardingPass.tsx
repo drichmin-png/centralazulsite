@@ -178,6 +178,13 @@ const AzulBoardingPass = ({
     onWhatsApp();
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroImage((prev) => randomImage(prev));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f5f7fb] pb-8">
       {/* Header */}
