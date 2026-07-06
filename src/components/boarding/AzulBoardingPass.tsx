@@ -223,7 +223,7 @@ const AzulBoardingPass = ({
         </AnimatePresence>
 
         {/* Hero image - destination */}
-        <div className="rounded-lg overflow-hidden -mx-4 sm:mx-0">
+        <div className="rounded-none overflow-hidden -mx-4 sm:mx-0">
           <img
             src={CIDADE_IMAGES[hashCode((data.codigo_reserva || "") + ":hero") % CIDADE_IMAGES.length]}
             alt={destinoNome}
