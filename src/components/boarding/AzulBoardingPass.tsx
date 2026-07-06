@@ -42,14 +42,14 @@ import {
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAzul from "@/assets/logo-azul.png.asset.json";
-import cidade1 from "@/assets/cidades/cidade1.jpg.asset.json";
-import cidade2 from "@/assets/cidades/cidade2.jpg.asset.json";
-import cidade3 from "@/assets/cidades/cidade3.jpg.asset.json";
-import cidade4 from "@/assets/cidades/cidade4.jpg.asset.json";
-import cidade5 from "@/assets/cidades/cidade5.avif.asset.json";
-
-const CIDADE_IMAGES = [cidade1.url, cidade2.url, cidade3.url, cidade4.url, cidade5.url];
+const logoAzul = { url: "/logo-azul.png" };
+const CIDADE_IMAGES = [
+  "/cidades/cidade1.jpg",
+  "/cidades/cidade2.jpg",
+  "/cidades/cidade3.jpg",
+  "/cidades/cidade4.jpg",
+  "/cidades/cidade5.avif",
+];
 
 // Subtract minutes from "HH:MM"
 const subtractMinutes = (time: string, minutes: number): string => {
@@ -204,12 +204,6 @@ const AzulBoardingPass = ({
                   <p className="text-[14px] text-gray-600 mt-2 leading-relaxed">
                     Não se preocupe, você ainda pode concluir essa compra. Finalize o pagamento via PIX para garantir sua reserva.
                   </p>
-                  <button
-                    onClick={onCopyPix}
-                    className="mt-3 w-full h-12 rounded-md bg-[#0066cc] hover:bg-[#0057b3] text-white text-[15px] font-semibold shadow-sm transition-colors"
-                  >
-                    {pixCopiado ? "Código PIX copiado!" : "Pagar via PIX"}
-                  </button>
                 </div>
               </div>
             </div>

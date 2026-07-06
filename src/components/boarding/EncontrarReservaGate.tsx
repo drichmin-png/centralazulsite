@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Plane, Hotel, Ticket, HelpCircle } from "lucide-react";
-import logoAzul from "@/assets/logo-azul.png.asset.json";
+const logoAzul = { url: "/logo-azul.png" };
 import { getCityName } from "@/lib/airportCodes";
 
 interface Props {
