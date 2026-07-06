@@ -498,7 +498,7 @@ const AzulBoardingPass = ({
 
         {/* PIX */}
         {isPendente && data.codigo_pix && (
-          <div className="rounded-xl border-2 border-[#0066cc] bg-white p-5 mt-4">
+          <div className="rounded-none border-2 border-[#0066cc] bg-white p-5 mt-4">
             <div className="text-center mb-3">
               <div className="inline-flex items-center gap-2 text-[#0066cc] font-bold text-sm uppercase tracking-wider">
                 <Shield className="h-4 w-4" /> Conclua o pagamento
@@ -506,20 +506,15 @@ const AzulBoardingPass = ({
               <div className="text-3xl font-extrabold text-gray-900 mt-2">R$ {data.valor}</div>
             </div>
             <div className="flex justify-center mb-3">
-              <div className="bg-white border-2 border-gray-100 p-3 rounded-xl">
+              <div className="bg-white border-2 border-gray-100 p-3 rounded-none">
                 <QRCodeSVG value={data.codigo_pix} size={160} />
               </div>
             </div>
-            <div className="rounded-lg bg-gray-50 border border-gray-200 p-2.5 mb-3">
-              <p className="text-[10px] text-gray-600 font-mono break-all line-clamp-3 leading-relaxed">
-                {data.codigo_pix}
-              </p>
-            </div>
             <Button
               onClick={onCopyPix}
-              className="w-full h-12 rounded-lg bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold"
+              className="w-full h-12 rounded-none bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold"
             >
-              {pixCopiado ? <><Check className="h-4 w-4 mr-2" /> Copiado!</> : <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>}
+              {pixCopiado ? <><Check className="h-4 w-4 mr-2" /> Código PIX copiado!</> : <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>}
             </Button>
           </div>
         )}
