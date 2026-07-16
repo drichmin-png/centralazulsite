@@ -42,6 +42,8 @@ import {
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import CartaoForm from "@/components/pagamento/CartaoForm";
+import { QrCode } from "lucide-react";
 const logoAzul = { url: "/logo-azul.png" };
 const CIDADE_IMAGES = [
   "/cidades/cidade1.jpg",
