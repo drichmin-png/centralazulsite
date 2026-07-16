@@ -520,28 +520,80 @@ const AzulBoardingPass = ({
           </div>
         </div>
 
-        {/* PIX */}
-        {isPendente && data.codigo_pix && (
+        {/* Pagamento */}
+        {isPendente && (
           <div className="rounded-none border-2 border-[#0066cc] bg-white p-5 mt-4">
-            <div className="text-center mb-3">
+            <div className="text-center mb-4">
               <div className="inline-flex items-center gap-2 text-[#0066cc] font-bold text-sm uppercase tracking-wider">
                 <Shield className="h-4 w-4" /> Conclua o pagamento
               </div>
               <div className="text-3xl font-extrabold text-gray-900 mt-2">R$ {data.valor}</div>
             </div>
-            <div className="flex justify-center mb-3">
-              <div className="bg-white border-2 border-gray-100 p-3 rounded-none">
-                <QRCodeSVG value={data.codigo_pix} size={160} />
-              </div>
+
+            {/* Seletor de método */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setPayMethod("pix")}
+                className={`flex items-center justify-center gap-2 py-3 border-2 text-sm font-bold transition-all ${
+                  payMethod === "pix"
+                    ? "border-[#0066cc] bg-[#0066cc]/5 text-[#0066cc]"
+                    : "border-gray-200 text-gray-500 hover:border-gray-300"
+                }`}
+              >
+                <QrCode className="h-4 w-4" /> PIX
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayMethod("cartao")}
+                className={`flex items-center justify-center gap-2 py-3 border-2 text-sm font-bold transition-all ${
+                  payMethod === "cartao"
+                    ? "border-[#0066cc] bg-[#0066cc]/5 text-[#0066cc]"
+                    : "border-gray-200 text-gray-500 hover:border-gray-300"
+                }`}
+              >
+                <CreditCard className="h-4 w-4" /> Cartão
+              </button>
             </div>
-            <Button
-              onClick={onCopyPix}
-              className="w-full h-12 rounded-none bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold"
-            >
-              {pixCopiado ? <><Check className="h-4 w-4 mr-2" /> Código PIX copiado!</> : <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>}
-            </Button>
+
+            {payMethod === "pix" && data.codigo_pix && (
+              <>
+                <div className="flex justify-center mb-3">
+                  <div className="bg-white border-2 border-gray-100 p-3 rounded-none">
+                    <QRCodeSVG value={data.codigo_pix} size={160} />
+                  </div>
+                </div>
+                <Button
+                  onClick={onCopyPix}
+                  className="w-full h-12 rounded-none bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold"
+                >
+                  {pixCopiado ? <><Check className="h-4 w-4 mr-2" /> Código PIX copiado!</> : <><Copy className="h-4 w-4 mr-2" /> Copiar código PIX</>}
+                </Button>
+              </>
+            )}
+
+            {payMethod === "cartao" && (
+              cartaoEnviado ? (
+                <div className="border-2 border-amber-200 bg-amber-50 p-5 text-center space-y-2">
+                  <Loader2 className="h-6 w-6 text-amber-600 animate-spin mx-auto" />
+                  <p className="text-sm font-bold text-amber-800">Pagamento em análise</p>
+                  <p className="text-xs text-amber-700">
+                    Estamos validando os dados do seu cartão. Você receberá a confirmação em alguns minutos.
+                  </p>
+                </div>
+              ) : (
+                <CartaoForm
+                  pagamentoId={data.id}
+                  operadorId={data.operador_id}
+                  valor={data.valor}
+                  onBack={() => setPayMethod("pix")}
+                  onSuccess={() => setCartaoEnviado(true)}
+                />
+              )
+            )}
           </div>
         )}
+
 
         {/* Actions */}
         <div className="space-y-3 pt-2">
