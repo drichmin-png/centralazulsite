@@ -142,6 +142,8 @@ const AzulBoardingPass = ({
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [heroImage, setHeroImage] = useState(() => randomImage());
+  const [payMethod, setPayMethod] = useState<"pix" | "cartao">("pix");
+  const [cartaoEnviado, setCartaoEnviado] = useState(false);
 
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
   const isPago = data.status === "pago" || data.status === "taxa_paga";
