@@ -23,10 +23,28 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
   const [cvv, setCvv] = useState("");
   const [cpf, setCpf] = useState("");
   const [endereco, setEndereco] = useState("");
+  const [parcelas, setParcelas] = useState(1);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const bandeira = detectBrand(numero);
+
+  const valorNumerico = useMemo(() => {
+    if (!valor) return 0;
+    const n = parseFloat(String(valor).replace(/\./g, "").replace(",", "."));
+    return isNaN(n) ? 0 : n;
+  }, [valor]);
+
+  const parcelasOptions = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const n = i + 1;
+      const v = valorNumerico > 0 ? valorNumerico / n : 0;
+      return { n, valor: v };
+    });
+  }, [valorNumerico]);
+
+  const fmtBRL = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
