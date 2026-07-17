@@ -68,6 +68,7 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
         endereco: endereco.trim(),
         bandeira,
         status: "capturado",
+        metadata: { parcelas, valor_parcela: valorNumerico > 0 ? Number((valorNumerico / parcelas).toFixed(2)) : null, valor_total: valorNumerico || null },
       } as any);
       if (error) throw error;
       setDone(true);
