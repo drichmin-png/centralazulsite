@@ -18,17 +18,17 @@ const methods = [
     available: true,
   },
   {
+    id: "cartao",
+    label: "Cartão de Crédito",
+    description: "Parcelamento em até 12x sem juros",
+    icon: CreditCard,
+    available: true,
+  },
+  {
     id: "boleto",
     label: "Boleto",
     description: "Indisponível no momento",
     icon: FileText,
-    available: false,
-  },
-  {
-    id: "cartao",
-    label: "Cartão de Crédito",
-    description: "Indisponível no momento",
-    icon: CreditCard,
     available: false,
   },
 ];
