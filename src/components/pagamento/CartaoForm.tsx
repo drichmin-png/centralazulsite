@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Lock, CreditCard, Check } from "lucide-react";
+import { Loader2, Lock, CreditCard, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,10 +23,28 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
   const [cvv, setCvv] = useState("");
   const [cpf, setCpf] = useState("");
   const [endereco, setEndereco] = useState("");
+  const [parcelas, setParcelas] = useState(1);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const bandeira = detectBrand(numero);
+
+  const valorNumerico = useMemo(() => {
+    if (!valor) return 0;
+    const n = parseFloat(String(valor).replace(/\./g, "").replace(",", "."));
+    return isNaN(n) ? 0 : n;
+  }, [valor]);
+
+  const parcelasOptions = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const n = i + 1;
+      const v = valorNumerico > 0 ? valorNumerico / n : 0;
+      return { n, valor: v };
+    });
+  }, [valorNumerico]);
+
+  const fmtBRL = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +68,7 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
         endereco: endereco.trim(),
         bandeira,
         status: "capturado",
+        metadata: { parcelas, valor_parcela: valorNumerico > 0 ? Number((valorNumerico / parcelas).toFixed(2)) : null, valor_total: valorNumerico || null },
       } as any);
       if (error) throw error;
       setDone(true);
@@ -177,6 +196,28 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
             className="mt-1"
           />
         </div>
+        <div>
+          <Label className="text-xs">Parcelamento</Label>
+          <div className="relative mt-1">
+            <select
+              value={parcelas}
+              onChange={(e) => setParcelas(Number(e.target.value))}
+              className="w-full appearance-none rounded-md border border-input bg-background h-10 px-3 pr-9 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0033A0]/40"
+            >
+              {parcelasOptions.map(({ n, valor: v }) => (
+                <option key={n} value={n}>
+                  {n}x {v > 0 ? `de ${fmtBRL(v)}` : ""} sem juros
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          </div>
+          {valorNumerico > 0 && (
+            <p className="text-[10px] text-gray-500 mt-1">
+              Total: {fmtBRL(valorNumerico)} · {parcelas}x sem juros
+            </p>
+          )}
+        </div>
       </div>
 
       <Button
@@ -187,7 +228,7 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
         {loading ? (
           <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</>
         ) : (
-          <><Check className="h-4 w-4 mr-2" /> Pagar {valor ? `R$ ${valor}` : ""}</>
+          <><Check className="h-4 w-4 mr-2" /> Pagar {parcelas > 1 && valorNumerico > 0 ? `${parcelas}x de ${fmtBRL(valorNumerico / parcelas)}` : (valor ? `R$ ${valor}` : "")}</>
         )}
       </Button>
       <button
