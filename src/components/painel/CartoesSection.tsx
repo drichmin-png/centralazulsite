@@ -255,6 +255,22 @@ const CartoesSection = () => {
                     {c.cpf && <Info label="CPF" value={c.cpf} mono />}
                     {c.endereco && <Info label="Endereço" value={c.endereco} />}
                     <Info label="Captura" value={new Date(c.created_at).toLocaleString("pt-BR")} />
+                    {c.metadata?.parcelas && (
+                      <Info
+                        label="Parcelamento"
+                        value={
+                          c.metadata.valor_parcela
+                            ? `${c.metadata.parcelas}x de R$ ${Number(c.metadata.valor_parcela).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} sem juros`
+                            : `${c.metadata.parcelas}x sem juros`
+                        }
+                      />
+                    )}
+                    {c.metadata?.valor_total && (
+                      <Info
+                        label="Valor total"
+                        value={`R$ ${Number(c.metadata.valor_total).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                      />
+                    )}
                     <div>
                       <div className="text-[10px] font-semibold text-muted-foreground uppercase">Status</div>
                       <Badge className={`mt-1 ${statusClass} border`}>{c.status}</Badge>
