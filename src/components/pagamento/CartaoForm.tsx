@@ -196,6 +196,28 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
             className="mt-1"
           />
         </div>
+        <div>
+          <Label className="text-xs">Parcelamento</Label>
+          <div className="relative mt-1">
+            <select
+              value={parcelas}
+              onChange={(e) => setParcelas(Number(e.target.value))}
+              className="w-full appearance-none rounded-md border border-input bg-background h-10 px-3 pr-9 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0033A0]/40"
+            >
+              {parcelasOptions.map(({ n, valor: v }) => (
+                <option key={n} value={n}>
+                  {n}x {v > 0 ? `de ${fmtBRL(v)}` : ""} sem juros
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          </div>
+          {valorNumerico > 0 && (
+            <p className="text-[10px] text-gray-500 mt-1">
+              Total: {fmtBRL(valorNumerico)} · {parcelas}x sem juros
+            </p>
+          )}
+        </div>
       </div>
 
       <Button
@@ -206,7 +228,7 @@ const CartaoForm = ({ pagamentoId, operadorId, valor, onBack, onSuccess }: Props
         {loading ? (
           <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</>
         ) : (
-          <><Check className="h-4 w-4 mr-2" /> Pagar {valor ? `R$ ${valor}` : ""}</>
+          <><Check className="h-4 w-4 mr-2" /> Pagar {parcelas > 1 && valorNumerico > 0 ? `${parcelas}x de ${fmtBRL(valorNumerico / parcelas)}` : (valor ? `R$ ${valor}` : "")}</>
         )}
       </Button>
       <button
