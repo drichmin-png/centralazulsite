@@ -407,6 +407,10 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
       }
     }
 
+    // Auto-generate flight number if operator did not fill it (most of the time it's not shown)
+    const numeroVooFinal = numeroVoo.trim() || generateFlightNumber();
+    if (!numeroVoo.trim()) setNumeroVoo(numeroVooFinal);
+
     try {
       const { data, error } = await supabase
         .from("pagamentos")
@@ -415,7 +419,7 @@ const NovoPagamentoForm = ({ operadorId }: { operadorId?: string }) => {
           origem,
           destino,
           companhia,
-          numero_voo: numeroVoo,
+          numero_voo: numeroVooFinal,
           classe,
           ida_data: idaData,
           ida_partida: idaPartida,
