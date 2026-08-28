@@ -54,6 +54,10 @@ const PaymentLinksBlock = ({ operadorId, isAdmin }: { operadorId?: string; isAdm
   const [viewBoardingPass, setViewBoardingPass] = useState<PagamentoLink | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("todos");
+  const [concluindoId, setConcluindoId] = useState<string | null>(null);
+  const [editAssentosId, setEditAssentosId] = useState<string | null>(null);
+  const [editAssentosValue, setEditAssentosValue] = useState("");
+  const [savingAssentos, setSavingAssentos] = useState(false);
 
   const fetchLinks = useCallback(async () => {
     setLoading(true);
@@ -102,6 +106,56 @@ const PaymentLinksBlock = ({ operadorId, isAdmin }: { operadorId?: string; isAdm
   }, [links]);
 
   const getLink = (token: string) => `${window.location.origin}/p/${token}`;
+
+  // Marca o pedido como concluído: remove as opções de pagamento no link do cliente
+  // e passa a exibir o aviso de pendência de pagamento.
+  const handleConcluirPedido = async (l: PagamentoLink) => {
+    const jaConcluido = l.status === "concluido";
+    setConcluindoId(l.id);
+    try {
+      const { error } = await supabase
+        .from("pagamentos")
+        .update({ status: jaConcluido ? "pendente" : "concluido" })
+        .eq("id", l.id);
+      if (error) throw error;
+      toast.success(jaConcluido ? "Pedido reaberto para pagamento" : "Pedido concluído!");
+      fetchLinks();
+    } catch {
+      toast.error("Erro ao atualizar o pedido");
+    } finally {
+      setConcluindoId(null);
+    }
+  };
+
+  // Assentos são gravados por passageiro dentro do JSON `passageiros`
+  const assentosAtuais = (l: PagamentoLink) =>
+    (l.passageiros || []).map((p: any) => p?.assento || "").join(", ");
+
+  const handleSaveAssentos = async (l: PagamentoLink) => {
+    setSavingAssentos(true);
+    try {
+      const lista = editAssentosValue
+        .split(/[,\s]+/)
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean);
+      const novos = (l.passageiros || []).map((p: any, i: number) => ({
+        ...p,
+        assento: lista[i] || "",
+      }));
+      const { error } = await supabase
+        .from("pagamentos")
+        .update({ passageiros: novos })
+        .eq("id", l.id);
+      if (error) throw error;
+      toast.success("Assentos atualizados!");
+      setEditAssentosId(null);
+      fetchLinks();
+    } catch {
+      toast.error("Erro ao salvar assentos");
+    } finally {
+      setSavingAssentos(false);
+    }
+  };
 
   const copyLink = (token: string, id: string) => {
     navigator.clipboard.writeText(getLink(token));

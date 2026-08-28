@@ -164,7 +164,8 @@ const BoardingPass = () => {
   const mainPassenger = data.passageiros?.[0] || {};
   const hasVolta = !!data.volta_data;
   const classeLabel = data.classe === "executiva" ? "Executiva" : data.classe === "primeira" ? "Primeira" : "Econômica";
-  const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
+  const isConcluido = data.status === "concluido";
+  const isPendente = (data.status === "pendente" || data.status === "taxa_pendente") && !isConcluido;
   const classeDisplay = data.classe === "executiva" ? "Executive" : data.classe === "primeira" ? "First Class" : "Premium";
 
   // ── Encontrar reserva gate ──
@@ -725,6 +726,18 @@ const BoardingPass = () => {
                       </motion.button>
                     );
                   })()}
+
+                  {isConcluido && (
+                    <div className="rounded-none bg-amber-50 border-2 border-amber-300 p-4 mb-4">
+                      <div className="flex items-start gap-2.5">
+                        <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-bold text-amber-800 leading-snug">Identificamos uma pendência no pagamento da sua viagem</p>
+                          <p className="text-xs text-amber-700 mt-1.5 leading-relaxed">Não se preocupe, você ainda pode concluir essa compra. Finalize o pagamento via PIX para garantir sua reserva.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Link mais detalhes do voo (opcional) */}
                   {isPendente && (data as any).link_detalhes && (

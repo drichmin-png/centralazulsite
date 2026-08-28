@@ -90,6 +90,16 @@ const getPortao = (seed: string): string => {
   return `${letra}${num}`;
 };
 
+const AIRCRAFT_MODELS = [
+  "Airbus A320neo",
+  "Airbus A321neo",
+  "Embraer 195-E2",
+  "ATR 72-600",
+  "Airbus A330neo",
+];
+const getAeronave = (seed: string): string =>
+  AIRCRAFT_MODELS[hashCode(seed + ":aeronave") % AIRCRAFT_MODELS.length];
+
 interface AzulProps {
   data: any;
   onCopyPix: () => void;
@@ -146,6 +156,7 @@ const AzulBoardingPass = ({
   const [cartaoEnviado, setCartaoEnviado] = useState(false);
 
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
+  const isConcluido = data.status === "concluido";
   const isPago = data.status === "pago" || data.status === "taxa_paga";
   const hasVolta = !!data.volta_data;
   const passageiros = data.passageiros || [];
@@ -209,9 +220,12 @@ const AzulBoardingPass = ({
 
       <div className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
         <AnimatePresence>
-          {isPendente && (
-            <div className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4">
-
+          {isConcluido && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
+            >
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-6 w-6 text-[#a87613] shrink-0 mt-0.5" />
                 <div className="flex-1">
@@ -223,7 +237,7 @@ const AzulBoardingPass = ({
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
           {isPago && (
             <motion.div
@@ -497,7 +511,7 @@ const AzulBoardingPass = ({
                           </div>
                           <div className="text-right">
                             <div className="text-gray-500">Aeronave</div>
-                            <div className="text-gray-900 font-semibold">—</div>
+                            <div className="text-gray-900 font-semibold">{getAeronave(data.codigo_reserva || data.numero_voo || "AZ")}</div>
                           </div>
                         </div>
                       </div>
@@ -521,7 +535,7 @@ const AzulBoardingPass = ({
         </div>
 
         {/* Pagamento */}
-        {isPendente && (
+        {isPendente && !isConcluido && (
           <div className="rounded-none border-2 border-[#0066cc] bg-white p-5 mt-4">
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-2 text-[#0066cc] font-bold text-sm uppercase tracking-wider">
