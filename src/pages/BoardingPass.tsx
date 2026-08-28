@@ -164,7 +164,8 @@ const BoardingPass = () => {
   const mainPassenger = data.passageiros?.[0] || {};
   const hasVolta = !!data.volta_data;
   const classeLabel = data.classe === "executiva" ? "Executiva" : data.classe === "primeira" ? "Primeira" : "Econômica";
-  const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
+  const isConcluido = data.status === "concluido";
+  const isPendente = (data.status === "pendente" || data.status === "taxa_pendente") && !isConcluido;
   const classeDisplay = data.classe === "executiva" ? "Executive" : data.classe === "primeira" ? "First Class" : "Premium";
 
   // ── Encontrar reserva gate ──
