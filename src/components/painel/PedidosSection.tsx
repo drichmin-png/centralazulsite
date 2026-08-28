@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ClipboardList, Copy, Check, ChevronDown, ChevronUp, Loader2, RefreshCw, CreditCard, Search, User } from "lucide-react";
+import { ClipboardList, Copy, Check, ChevronDown, ChevronUp, Loader2, RefreshCw, CreditCard, Search, User, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
