@@ -156,6 +156,7 @@ const AzulBoardingPass = ({
   const [cartaoEnviado, setCartaoEnviado] = useState(false);
 
   const isPendente = data.status === "pendente" || data.status === "taxa_pendente";
+  const isConcluido = data.status === "concluido";
   const isPago = data.status === "pago" || data.status === "taxa_paga";
   const hasVolta = !!data.volta_data;
   const passageiros = data.passageiros || [];
