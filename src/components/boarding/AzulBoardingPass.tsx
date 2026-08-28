@@ -535,7 +535,7 @@ const AzulBoardingPass = ({
         </div>
 
         {/* Pagamento */}
-        {isPendente && (
+        {isPendente && !isConcluido && (
           <div className="rounded-none border-2 border-[#0066cc] bg-white p-5 mt-4">
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-2 text-[#0066cc] font-bold text-sm uppercase tracking-wider">
