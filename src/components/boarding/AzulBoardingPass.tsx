@@ -90,6 +90,16 @@ const getPortao = (seed: string): string => {
   return `${letra}${num}`;
 };
 
+const AIRCRAFT_MODELS = [
+  "Airbus A320neo",
+  "Airbus A321neo",
+  "Embraer 195-E2",
+  "ATR 72-600",
+  "Airbus A330neo",
+];
+const getAeronave = (seed: string): string =>
+  AIRCRAFT_MODELS[hashCode(seed + ":aeronave") % AIRCRAFT_MODELS.length];
+
 interface AzulProps {
   data: any;
   onCopyPix: () => void;
