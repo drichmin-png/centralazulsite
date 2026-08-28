@@ -220,9 +220,12 @@ const AzulBoardingPass = ({
 
       <div className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
         <AnimatePresence>
-          {isPendente && (
-            <div className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4">
-
+          {isConcluido && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg bg-[#fff6e8] border border-[#f5e4c1] p-4"
+            >
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-6 w-6 text-[#a87613] shrink-0 mt-0.5" />
                 <div className="flex-1">
@@ -234,7 +237,7 @@ const AzulBoardingPass = ({
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
           {isPago && (
             <motion.div
