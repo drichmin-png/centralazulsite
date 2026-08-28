@@ -54,6 +54,10 @@ const PaymentLinksBlock = ({ operadorId, isAdmin }: { operadorId?: string; isAdm
   const [viewBoardingPass, setViewBoardingPass] = useState<PagamentoLink | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("todos");
+  const [concluindoId, setConcluindoId] = useState<string | null>(null);
+  const [editAssentosId, setEditAssentosId] = useState<string | null>(null);
+  const [editAssentosValue, setEditAssentosValue] = useState("");
+  const [savingAssentos, setSavingAssentos] = useState(false);
 
   const fetchLinks = useCallback(async () => {
     setLoading(true);
