@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ClipboardList, Copy, Check, ChevronDown, ChevronUp, Loader2, RefreshCw, CreditCard, Search, User } from "lucide-react";
+import { ClipboardList, Copy, Check, ChevronDown, ChevronUp, Loader2, RefreshCw, CreditCard, Search, User, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -159,6 +159,30 @@ const PedidosSection = ({ onCountChange, operadorId, isAdmin }: PedidosSectionPr
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
+          {reservas.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const total = isAdmin ? reservas.length : reservas.length;
+                if (!confirm(`Limpar ${total} pedido(s) coletado(s)? Esta ação não pode ser desfeita.`)) return;
+                try {
+                  let q = supabase.from("reservas").delete();
+                  if (!isAdmin && operadorId) q = q.eq("operador_id", operadorId);
+                  else q = q.not("id", "is", null);
+                  const { error } = await q;
+                  if (error) throw error;
+                  toast.success("Dados limpos com sucesso");
+                  fetchReservas();
+                } catch {
+                  toast.error("Erro ao limpar dados");
+                }
+              }}
+              className="h-9 rounded-xl text-xs font-semibold gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/5"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Limpar dados
+            </Button>
+          )}
         </div>
       </div>
 
