@@ -517,16 +517,74 @@ const PaymentLinksBlock = ({ operadorId, isAdmin }: { operadorId?: string; isAdm
                             </div>
                           )}
 
-                          {/* Alterar Código PIX */}
-                          {editPixId !== l.id && (
-                            <Button
-                              variant="outline"
-                              onClick={() => { setEditPixId(l.id); setEditPixValue(l.codigo_pix || ""); }}
-                              className="w-full h-11 rounded-xl text-xs font-semibold border-border/50 gap-1.5"
-                            >
-                              <Pencil className="h-3.5 w-3.5" /> Alterar Código PIX
-                            </Button>
+                          {/* Alterar PIX + Editar Assentos + Concluir Pedido */}
+                          {editPixId !== l.id && editAssentosId !== l.id && (
+                            <div className="grid grid-cols-2 gap-2.5">
+                              <Button
+                                variant="outline"
+                                onClick={() => { setEditPixId(l.id); setEditPixValue(l.codigo_pix || ""); }}
+                                className="h-11 rounded-xl text-xs font-semibold border-border/50 gap-1.5"
+                              >
+                                <Pencil className="h-3.5 w-3.5" /> Alterar PIX
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => { setEditAssentosId(l.id); setEditAssentosValue(assentosAtuais(l)); }}
+                                className="h-11 rounded-xl text-xs font-semibold border-border/50 gap-1.5"
+                              >
+                                <Armchair className="h-3.5 w-3.5" /> Marcar assentos
+                              </Button>
+                            </div>
                           )}
+
+                          {/* Editar assentos inline */}
+                          {editAssentosId === l.id && (
+                            <div className="rounded-xl border border-border/40 bg-card p-3 space-y-2.5">
+                              <Label className="text-[11px] font-semibold text-muted-foreground">
+                                Assentos ({(l.passageiros || []).length} passageiro(s), separe por vírgula)
+                              </Label>
+                              <Input
+                                value={editAssentosValue}
+                                onChange={(e) => setEditAssentosValue(e.target.value)}
+                                placeholder="12A, 12B, 13C"
+                                className="h-9 rounded-xl text-xs uppercase"
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  disabled={savingAssentos}
+                                  onClick={() => handleSaveAssentos(l)}
+                                  className="h-9 gap-1.5 text-xs rounded-xl flex-1"
+                                >
+                                  {savingAssentos ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                                  Salvar assentos
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setEditAssentosId(null)} className="h-9 text-xs rounded-xl">
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Concluir Pedido */}
+                          <Button
+                            variant={l.status === "concluido" ? "outline" : "default"}
+                            onClick={() => handleConcluirPedido(l)}
+                            disabled={concluindoId === l.id}
+                            className={`w-full h-11 rounded-xl text-xs font-semibold gap-1.5 ${
+                              l.status === "concluido"
+                                ? "border-amber-500/40 text-amber-700 hover:bg-amber-50"
+                                : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                            }`}
+                          >
+                            {concluindoId === l.id ? (
+                              <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Atualizando...</>
+                            ) : l.status === "concluido" ? (
+                              <><Pencil className="h-3.5 w-3.5" /> Reabrir pedido</>
+                            ) : (
+                              <><Check className="h-3.5 w-3.5" /> Concluir pedido</>
+                            )}
+                          </Button>
 
                           {/* Enviar e-mail (detalhes da viagem) + Cartão de embarque (email) */}
                           <div className="grid grid-cols-2 gap-2.5">
