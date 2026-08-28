@@ -511,7 +511,7 @@ const AzulBoardingPass = ({
                           </div>
                           <div className="text-right">
                             <div className="text-gray-500">Aeronave</div>
-                            <div className="text-gray-900 font-semibold">—</div>
+                            <div className="text-gray-900 font-semibold">{getAeronave(data.codigo_reserva || data.numero_voo || "AZ")}</div>
                           </div>
                         </div>
                       </div>
